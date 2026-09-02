@@ -22,30 +22,40 @@ const FRESH = args.includes('--fresh');
 const DROP_ONLY = args.includes('--drop');
 
 const categories = [
-  { category: 'Laptops', description: 'Portable computers for work and study.' },
-  { category: 'Smartphones', description: 'Mobile phones and accessories.' },
-  { category: 'Audio', description: 'Headphones, earbuds and speakers.' },
-  { category: 'Peripherals', description: 'Keyboards, mice and monitors.' },
-  { category: 'Gaming', description: 'Consoles, controllers and games.' },
+  { category: 'Floral', description: 'Fragrances with dominant flower notes such as rose, jasmine and lily.' },
+  { category: 'Woody', description: 'Warm, earthy scents built on sandalwood, cedar and oud.' },
+  { category: 'Citrus', description: 'Bright, zesty fragrances featuring lemon, bergamot and orange.' },
+  { category: 'Oriental', description: 'Rich, spicy compositions with amber, vanilla and exotic resins.' },
+  { category: 'Fresh', description: 'Light, clean scents inspired by the ocean, green notes and herbs.' },
 ];
 
 // Products reference categories by NAME here; the ids are resolved after the
 // categories are inserted, so this list stays readable and easy to extend.
 const products = [
-  { productName: 'ThinkPad X1 Carbon', category: 'Laptops', description: '14" business ultrabook, 16GB RAM, 512GB SSD.', price: 28999.99, stock: 12, image: ['https://placehold.co/600x400?text=X1+Carbon'] },
-  { productName: 'MacBook Air M3', category: 'Laptops', description: '13" fanless laptop, 8GB RAM, 256GB SSD.', price: 24499.0, stock: 8, image: ['https://placehold.co/600x400?text=MacBook+Air'] },
-  { productName: 'Dell Inspiron 15', category: 'Laptops', description: 'Everyday 15.6" laptop, 8GB RAM, 512GB SSD.', price: 11999.5, stock: 0, image: ['https://placehold.co/600x400?text=Inspiron+15'] },
-  { productName: 'Samsung Galaxy S24', category: 'Smartphones', description: '6.2" AMOLED, 128GB, triple camera.', price: 18999.0, stock: 25, image: ['https://placehold.co/600x400?text=Galaxy+S24'] },
-  { productName: 'iPhone 15', category: 'Smartphones', description: '6.1" display, 128GB, USB-C.', price: 19999.0, stock: 15, image: ['https://placehold.co/600x400?text=iPhone+15'] },
-  { productName: 'Nokia 3210 (2024)', category: 'Smartphones', description: 'Reissued feature phone with a month of standby.', price: 1299.0, stock: 40, image: ['https://placehold.co/600x400?text=Nokia+3210'] },
-  { productName: 'Sony WH-1000XM5', category: 'Audio', description: 'Over-ear noise cancelling headphones.', price: 6999.0, stock: 18, image: ['https://placehold.co/600x400?text=WH-1000XM5'] },
-  { productName: 'JBL Flip 6', category: 'Audio', description: 'Portable waterproof Bluetooth speaker.', price: 1899.99, stock: 30, image: ['https://placehold.co/600x400?text=JBL+Flip+6'] },
-  { productName: 'Logitech MX Master 3S', category: 'Peripherals', description: 'Ergonomic wireless mouse, 8K DPI.', price: 1999.0, stock: 22, image: ['https://placehold.co/600x400?text=MX+Master+3S'] },
-  { productName: 'Keychron K2 Pro', category: 'Peripherals', description: '75% hot-swappable mechanical keyboard.', price: 2499.0, stock: 14, image: ['https://placehold.co/600x400?text=Keychron+K2'] },
-  { productName: 'LG 27" 4K Monitor', category: 'Peripherals', description: '27-inch IPS 4K display with USB-C.', price: 8499.0, stock: 6, image: ['https://placehold.co/600x400?text=LG+27+4K'] },
-  { productName: 'PlayStation 5 Slim', category: 'Gaming', description: 'Disc edition console, 1TB SSD.', price: 13999.0, stock: 5, image: ['https://placehold.co/600x400?text=PS5+Slim'] },
-  { productName: 'Xbox Series X', category: 'Gaming', description: '4K console, 1TB SSD.', price: 13499.0, stock: 0, image: ['https://placehold.co/600x400?text=Xbox+Series+X'] },
-  { productName: 'DualSense Controller', category: 'Gaming', description: 'Wireless controller with haptic feedback.', price: 1499.0, stock: 35, image: ['https://placehold.co/600x400?text=DualSense'] },
+  // --- Floral ---
+  { productName: 'Midnight Sun', category: 'Floral', description: 'A luminous white-floral bouquet with notes of jasmine and ylang-ylang over a soft musk base.', price: 479.99, stock: 25, image: ['https://placehold.co/600x400?text=Midnight+Sun'] },
+  { productName: 'Rose d\'Or', category: 'Floral', description: 'Centifolia rose intertwined with pink pepper and a whisper of raspberry leaf.', price: 649.00, stock: 18, image: ['https://placehold.co/600x400?text=Rose+dOr'] },
+  { productName: 'Lily Bloom', category: 'Floral', description: 'Fresh water lily and freesia layered over a base of white cedarwood.', price: 399.99, stock: 0, image: ['https://placehold.co/600x400?text=Lily+Bloom'] },
+
+  // --- Woody ---
+  { productName: 'Koedoe', category: 'Woody', description: 'A bold, Africa-inspired woody fragrance with vetiver, patchouli and smoked oud.', price: 899.99, stock: 12, image: ['https://placehold.co/600x400?text=Koedoe'] },
+  { productName: 'Twilight Mist', category: 'Woody', description: 'A natural, soothing forest-like fragrance with pine, moss and warm amber undertones.', price: 599.99, stock: 20, image: ['https://placehold.co/600x400?text=Twilight+Mist'] },
+  { productName: 'Sandalwood Reserve', category: 'Woody', description: 'Creamy Indian sandalwood softened by tonka bean and dried fig.', price: 749.00, stock: 0, image: ['https://placehold.co/600x400?text=Sandalwood+Reserve'] },
+
+  // --- Citrus ---
+  { productName: 'Bergamot Burst', category: 'Citrus', description: 'Sparkling Calabrian bergamot accented with white tea and a musk dry-down.', price: 349.99, stock: 30, image: ['https://placehold.co/600x400?text=Bergamot+Burst'] },
+  { productName: 'Lemon Groove', category: 'Citrus', description: 'Sicilian lemon and grapefruit lifted by basil and sea salt.', price: 299.00, stock: 22, image: ['https://placehold.co/600x400?text=Lemon+Groove'] },
+  { productName: 'Orange Zest', category: 'Citrus', description: 'Sweet blood orange blended with neroli and a touch of cardamom.', price: 329.99, stock: 15, image: ['https://placehold.co/600x400?text=Orange+Zest'] },
+
+  // --- Oriental ---
+  { productName: 'Velvet Oud', category: 'Oriental', description: 'A deep, intoxicating blend of oud, black vanilla and smoky incense.', price: 1199.99, stock: 8, image: ['https://placehold.co/600x400?text=Velvet+Oud'] },
+  { productName: 'Amber Royale', category: 'Oriental', description: 'Golden amber, cinnamon bark and candied apricot sealed with labdanum.', price: 849.00, stock: 10, image: ['https://placehold.co/600x400?text=Amber+Royale'] },
+  { productName: 'Spice Route', category: 'Oriental', description: 'A journey through saffron, cardamom and tonka bean over a sandalwood base.', price: 699.99, stock: 0, image: ['https://placehold.co/600x400?text=Spice+Route'] },
+
+  // --- Fresh ---
+  { productName: 'Ocean Breeze', category: 'Fresh', description: 'Cool marine notes with driftwood, sea kelp and a transparent musk.', price: 429.99, stock: 28, image: ['https://placehold.co/600x400?text=Ocean+Breeze'] },
+  { productName: 'Green Valley', category: 'Fresh', description: 'Crisp green apple, crushed mint and dewy cucumber over a white musk trail.', price: 379.00, stock: 20, image: ['https://placehold.co/600x400?text=Green+Valley'] },
+  { productName: 'Arctic Frost', category: 'Fresh', description: 'Icy eucalyptus and frozen peppermint with an ozone and cedar finish.', price: 449.99, stock: 16, image: ['https://placehold.co/600x400?text=Arctic+Frost'] },
 ];
 
 async function wipe() {

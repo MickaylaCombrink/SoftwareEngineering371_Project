@@ -29,10 +29,10 @@ beforeAll(async () => {
   // keep the token so the authentication cases below reach the intended
   // validation/duplicate handlers instead of the auth guard.
   const admin = await request(app).post('/api/auth/register').send({
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@example.com',
-    password: 'strongpass123',
+    firstName: 'Mickayla',
+    lastName: 'Combrick',
+    email: 'mickayla.combrick@gmail.com',
+    password: 'mickayla123',
     role: 'admin',
   });
   adminToken = admin.body.token;
@@ -73,7 +73,7 @@ describe('Product error handling', () => {
 });
 
 describe('Categories API', () => {
-  const sample = { category: 'Laptops', description: 'Portable computers.' };
+  const sample = { category: 'Floral', description: 'Fragrances with dominant flower notes.' };
 
   test('create then list -> 201 then the category comes back', async () => {
     const created = await request(app)
@@ -85,7 +85,7 @@ describe('Categories API', () => {
     const list = await request(app).get('/api/categories');
     expect(list.statusCode).toBe(200);
     expect(list.body.results).toBe(1);
-    expect(list.body.data.categories[0].category).toBe('Laptops');
+    expect(list.body.data.categories[0].category).toBe('Floral');
   });
 
   test('duplicate category name -> 409 via the duplicate-key handler', async () => {

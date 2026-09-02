@@ -26,10 +26,10 @@ beforeAll(async () => {
   const reg = await request(app)
     .post('/api/auth/register')
     .send({
-      firstName: 'James',
-      lastName: 'Koedoe',
-      email: 'jk@example.com',
-      password: 'strongpass123',
+      firstName: 'Nkosinathi',
+      lastName: 'Mathenjwa',
+      email: 'nkosinathi.mathenjwa@gmail.com',
+      password: 'nathi123',
     });
   token = reg.body.token;
 });
@@ -43,9 +43,9 @@ beforeEach(async () => {
   await Product.deleteMany({});
   await Cart.deleteMany({});
   product = await Product.create({
-    productName: 'ThinkPad X1 Carbon',
-    description: 'Business ultrabook',
-    price: 5000,
+    productName: 'Midnight Sun',
+    description: 'A luminous white-floral bouquet',
+    price: 500,
     stock: 10,
   });
 });
@@ -142,8 +142,8 @@ describe('Shopping Cart API', () => {
     await request(app).post('/api/cart/items').set(auth()).send({ productId: product._id.toString(), quantity: 3 });
 
     const res = await request(app).get('/api/cart').set(auth());
-    // Combined quantity of 5 at price 5000
-    expect(res.body.subtotal).toBe(25000);
+    // Combined quantity of 5 at price 500
+    expect(res.body.subtotal).toBe(2500);
   });
 
   test('any cart route without a token -> 401', async () => {

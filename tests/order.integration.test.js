@@ -27,18 +27,18 @@ beforeAll(async () => {
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
   const regCustomer = await request(app).post('/api/auth/register').send({
-    firstName: 'James',
-    lastName: 'Koedoe',
-    email: 'customer@example.com',
-    password: 'strongpass123',
+    firstName: 'Tanya',
+    lastName: 'Richards',
+    email: 'tanya.richards@gmail.com',
+    password: 'tanya123',
   });
   customerToken = regCustomer.body.token;
 
   const regAdmin = await request(app).post('/api/auth/register').send({
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@example.com',
-    password: 'strongpass123',
+    firstName: 'Momelezi',
+    lastName: 'Tyini',
+    email: 'momelezi.tyini@gmail.com',
+    password: 'momelezi123',
     role: 'admin',
   });
   adminToken = regAdmin.body.token;
@@ -57,9 +57,9 @@ beforeEach(async () => {
 
 async function createProduct(overrides = {}) {
   return Product.create({
-    productName: 'ThinkPad X1 Carbon',
-    description: 'Business ultrabook',
-    price: 5000,
+    productName: 'Midnight Sun',
+    description: 'A luminous white-floral bouquet',
+    price: 500,
     stock: 10,
     ...overrides,
   });
@@ -82,7 +82,7 @@ describe('Orders', () => {
       .set('Authorization', `Bearer ${customerToken}`);
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.data.order.totalPrice).toBe(10000);
+    expect(res.body.data.order.totalPrice).toBe(1000);
     expect(res.body.data.order.items).toHaveLength(1);
     expect((await Product.findById(product._id)).stock).toBe(8);
     const cart = await Cart.findOne({});
@@ -116,7 +116,7 @@ describe('Orders', () => {
   });
 
   test('a price change after checkout does not alter the historic order', async () => {
-    const product = await createProduct({ price: 5000 });
+    const product = await createProduct({ price: 500 });
     await seedCartFor(customerToken, product, 2);
 
     const orderRes = await request(app)
@@ -134,8 +134,8 @@ describe('Orders', () => {
     const line = getRes.body.data.order.items.find(
       (i) => i.productId.toString() === product._id.toString()
     );
-    expect(line.unitPrice).toBe(5000);
-    expect(getRes.body.data.order.totalPrice).toBe(10000);
+    expect(line.unitPrice).toBe(500);
+    expect(getRes.body.data.order.totalPrice).toBe(1000);
   });
 
   test('GET /api/orders returns only my orders, newest first', async () => {
