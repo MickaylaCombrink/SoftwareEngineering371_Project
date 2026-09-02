@@ -16,4 +16,39 @@
  * translates JsonWebTokenError and TokenExpiredError into 401s.
  */
 
-module.exports = {};
+const {verifyAccessToken} = require('../utils/token');
+const AppError = require('../utils/AppError');
+
+function protect(req, res, next){
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : null;
+
+    if (!token) {
+        return next(new AppError('Not Logged In. Log In to gain access', 401));
+    }
+
+    try {const decoded = verifyAccessToken(token);
+        req.user = decoded;
+        next();
+    }
+    catch (err) {
+        next(new AppError('Invalid or expired Token', 401));
+    }
+}
+
+function restrictTo(...roles) {
+    return (req, res, next) => {
+        if (!req.user || !roles.includes(req.user.role)) {
+            return next(new AppError('You do not have permission for this action', 403));
+
+        }
+        next();
+    }
+}
+
+module.exports = {
+    protect,
+    restrictTo
+};

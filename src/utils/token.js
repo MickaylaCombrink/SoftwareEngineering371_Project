@@ -14,7 +14,7 @@
  *   JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN
  *
  * `jsonwebtoken` is already a dependency.
- */  
+ */
 
 
 //call dependancy
@@ -24,7 +24,7 @@ const jwt = require('jsonwebtoken');
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-// Sign in
+// Signing
 function signAccessToken(payload) {
     return jwt.sign(payload, ACCESS_TOKEN_SECRET, {expiresIn: '15m'});
 }
