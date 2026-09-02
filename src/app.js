@@ -1,22 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
+const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-
-// TODO (Person 2 — Login and Security): create src/routes/authRoutes.js
-//      and uncomment the mount below.
-// const authRoutes = require('./routes/authRoutes');
-
-// TODO (Person 3 — Shopping Cart API): create src/routes/cartRoutes.js
-//      and uncomment the mount below.
-// const cartRoutes = require('./routes/cartRoutes');
-
-// TODO (unassigned — Orders): the orders endpoints depend on both the auth
-//      middleware (Person 2) and the cart (Person 3), so they are not built
-//      yet. Whoever picks this up adds src/routes/orderRoutes.js here.
-// const orderRoutes = require('./routes/orderRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const notFound = require('./middleware/notFound');
 const globalErrorHandler = require('./middleware/errorHandler');
@@ -36,8 +27,19 @@ app.use(
 
 app.use(express.json());
 
-// TODO (Person 2): add rate limiting here (express-rate-limit), especially
-//      on the login route, before the routes are mounted.
+// --- Rate limiting (brute-force protection) ---
+// A stricter limit applies to the authentication endpoints where repeated
+// guesses are the attack of interest (login, register, refresh).
+app.use(
+  '/api/auth',
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // 100 requests allowed before a 429
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { status: 'fail', message: 'Too many requests, please try again later.' },
+  })
+);
 
 // --- Health check (used by the host's uptime probe) ---
 app.get('/api/health', (req, res) => {
@@ -45,11 +47,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- API routes ---
-// app.use('/api/auth', authRoutes);      // Person 2
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
-// app.use('/api/cart', cartRoutes);      // Person 3
-// app.use('/api/orders', orderRoutes);   // unassigned
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // --- Error handling (order matters: these must be LAST) ---
 // 1) Anything that reaches here didn't match a route above -> 404

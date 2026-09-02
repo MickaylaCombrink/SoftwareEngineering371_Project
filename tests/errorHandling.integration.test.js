@@ -17,12 +17,25 @@ const Product = require('../src/models/Product');
 const Category = require('../src/models/Category');
 
 let mongoServer;
+let adminToken;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
   // Build the declared indexes so the unique-constraint test is meaningful.
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
+
+  // The product/category write routes are admin-only; register an admin and
+  // keep the token so the authentication cases below reach the intended
+  // validation/duplicate handlers instead of the auth guard.
+  const admin = await request(app).post('/api/auth/register').send({
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@example.com',
+    password: 'strongpass123',
+    role: 'admin',
+  });
+  adminToken = admin.body.token;
 });
 
 afterAll(async () => {
@@ -51,6 +64,7 @@ describe('Product error handling', () => {
   test('creating a product with a negative price -> 400 with validation message', async () => {
     const res = await request(app)
       .post('/api/products')
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({ productName: 'Bad', description: 'd', price: -1, stock: 1 });
 
     expect(res.statusCode).toBe(400);
@@ -62,7 +76,10 @@ describe('Categories API', () => {
   const sample = { category: 'Laptops', description: 'Portable computers.' };
 
   test('create then list -> 201 then the category comes back', async () => {
-    const created = await request(app).post('/api/categories').send(sample);
+    const created = await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(sample);
     expect(created.statusCode).toBe(201);
 
     const list = await request(app).get('/api/categories');
@@ -72,25 +89,38 @@ describe('Categories API', () => {
   });
 
   test('duplicate category name -> 409 via the duplicate-key handler', async () => {
-    await request(app).post('/api/categories').send(sample);
+    await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(sample);
 
-    const res = await request(app).post('/api/categories').send(sample);
+    const res = await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(sample);
 
     expect(res.statusCode).toBe(409);
     expect(await Category.countDocuments()).toBe(1);
   });
 
   test('missing required description -> 400', async () => {
-    const res = await request(app).post('/api/categories').send({ category: 'Orphan' });
+    const res = await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ category: 'Orphan' });
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(/description/i);
   });
 
   test('update a category -> 200 with the new values', async () => {
-    const created = await request(app).post('/api/categories').send(sample);
+    const created = await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(sample);
 
     const res = await request(app)
       .put(`/api/categories/${created.body.data.category._id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({ description: 'Updated description.' });
 
     expect(res.statusCode).toBe(200);
@@ -98,16 +128,23 @@ describe('Categories API', () => {
   });
 
   test('delete a category -> 204, and it is gone', async () => {
-    const created = await request(app).post('/api/categories').send(sample);
+    const created = await request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(sample);
 
-    const res = await request(app).delete(`/api/categories/${created.body.data.category._id}`);
+    const res = await request(app)
+      .delete(`/api/categories/${created.body.data.category._id}`)
+      .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.statusCode).toBe(204);
     expect(await Category.countDocuments()).toBe(0);
   });
 
   test('deleting a category that does not exist -> 404', async () => {
-    const res = await request(app).delete(`/api/categories/${new mongoose.Types.ObjectId()}`);
+    const res = await request(app)
+      .delete(`/api/categories/${new mongoose.Types.ObjectId()}`)
+      .set('Authorization', `Bearer ${adminToken}`);
     expect(res.statusCode).toBe(404);
   });
 });
@@ -118,10 +155,19 @@ describe('Unmatched route', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  test('a route belonging to work not built yet is also a 404', async () => {
-    // /api/auth (Person 2) and /api/cart (Person 3) are not mounted yet.
-    expect((await request(app).post('/api/auth/login')).statusCode).toBe(404);
-    expect((await request(app).get('/api/cart')).statusCode).toBe(404);
+  test('an unknown /api route is also a 404', async () => {
+    const res = await request(app).get('/api/does-not-exist');
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('a mounted route that lacks required input is not a 404', async () => {
+    // /api/auth/login and /api/cart are now mounted; bad requests on them
+    // return 400/401 rather than falling through to the 404 handler.
+    const login = await request(app).post('/api/auth/login').send({});
+    expect(login.statusCode).toBe(400);
+
+    const cart = await request(app).get('/api/cart');
+    expect(cart.statusCode).toBe(401);
   });
 });
 
