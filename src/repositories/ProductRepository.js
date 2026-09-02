@@ -53,6 +53,24 @@ class ProductRepository extends BaseRepository {
 
     return query.exec();
   }
+
+  /**
+   * Compensating write: restore stock consumed by a checkout that later
+   * failed, so inventory is not lost without an order to show for it.
+   */
+  async incrementStock(productId, quantity, options = {}) {
+    const { session } = options;
+
+    let query = this.model.findByIdAndUpdate(
+      productId,
+      { $inc: { stock: quantity } },
+      { new: true }
+    );
+
+    if (session) query = query.session(session);
+
+    return query.exec();
+  }
 }
 
 module.exports = new ProductRepository();

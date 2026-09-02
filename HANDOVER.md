@@ -1,10 +1,8 @@
 # Milestone 2 — who owns what
 
-The skeleton, the database layer and the error handling are in place.
-The auth and cart features are deliberately **not** written — they are
-Person 2's and Person 3's work.
-
-Anything below marked TODO in the code names its owner.
+All four personas' deliverables are implemented and the test suite is
+green (5 suites, 52 tests). Anything previously marked TO BUILD has been
+completed; the sections below record where each piece lives.
 
 ---
 
@@ -19,9 +17,40 @@ Anything below marked TODO in the code names its owner.
 | Five schemas + indexes | `src/models/` — 11 explicit `schema.index(...)` declarations |
 
 The per-model repositories (`ProductRepository`, `CategoryRepository`,
-`CartRepository`, `OrderRepository`, `UserRepository`) are also here and
-extend `BaseRepository`. Person 2 and Person 3 can use theirs as-is or
-extend them.
+`CartRepository`, `OrderRepository`, `UserRepository`) extend
+`BaseRepository`. Checkout also relies on
+`ProductRepository.decrementStock()` (atomic, refuses to oversell) and its
+compensating `incrementStock()` for rollback.
+
+## Person 2 — Login and Security — DONE
+
+| Deliverable | Where |
+|---|---|
+| JWT sign/verify | `src/config/jwt.js` — access + refresh tokens, separate secrets |
+| Auth middleware | `src/middleware/auth.js` — `protect`, `restrictTo(...roles)` |
+| Auth controller | `src/controllers/authController.js` — register, login, refresh, logout, getMe |
+| Routes | `src/routes/authRoutes.js`, mounted at `/api/auth` in `src/app.js` |
+| Rate limiting | `express-rate-limit` on `/api/auth` in `src/app.js` |
+| Password hashing | `bcryptjs` at cost 12; the raw password is length-validated (min 8) before hashing |
+
+Security behaviour covered by the tests: same 401 message for unknown
+email and wrong password (no enumeration), hashed storage with
+`select: false`, expired/bad tokens -> 401, logout invalidates the refresh
+token allow-list, and `restrictTo('admin')` is restored on the product and
+category write routes.
+
+## Person 3 — Shopping Cart API — DONE
+
+| Deliverable | Where |
+|---|---|
+| Business rules | `src/services/cartService.js` — add, change quantity, remove, totals |
+| Controller | `src/controllers/cartController.js` |
+| Routes | `src/routes/cartRoutes.js`, mounted at `/api/cart` (all behind `protect`) |
+
+Cart rules from the plan: quantity above stock -> 422 with the cart
+unchanged; the same product added twice combines into one line item;
+totals are `unitPrice * quantity` summed. `cartRepository.findOrCreateByUser`
+removes the "no cart yet" special case.
 
 ## Person 4 — Error Handling and Categories — DONE
 
@@ -42,92 +71,33 @@ and the Categories API.
 
 ---
 
-## Person 2 — Login and Security — TO BUILD
+## Unassigned — Orders — DONE (picked up)
 
-The files exist but are **empty stubs** — each one has a header comment
-listing what it must export and which test cases it has to satisfy:
+| Deliverable | Where |
+|---|---|
+| Service | `src/services/orderService.js` — checkout, history, ownership-scoped read, admin status update |
+| Controller | `src/controllers/orderController.js` |
+| Routes | `src/routes/orderRoutes.js`, mounted at `/api/orders` |
 
-- `src/config/jwt.js`
-- `src/middleware/auth.js`
-- `src/controllers/authController.js`
-- `src/routes/authRoutes.js`
-- `tests/auth.integration.test.js` (12 `test.todo` entries)
+Checkout uses a compensation (saga) flow: stock is decremented atomically
+per line, the order snapshot is written, the cart is cleared, and any
+failure after a decrement restores that stock — so a failed checkout never
+consumes inventory or partial-commits an order. Line items carry a
+`unitPrice` snapshot so later price changes never alter historic orders.
+`GET /api/orders/:id` returns 403 for non-owners without leaking whether an
+order id exists.
 
-What the rest of the code expects you to create:
+## Complete and verified
 
-- `src/config/jwt.js` — sign and verify access + refresh tokens.
-  `.env.example` already declares `JWT_SECRET`, `JWT_EXPIRES_IN`,
-  `JWT_REFRESH_SECRET`, `JWT_REFRESH_EXPIRES_IN`.
-- `src/controllers/authController.js` — register, login, refresh, logout.
-  Password hashing with `bcryptjs` (already a dependency).
-- `src/middleware/auth.js` — must export `protect` and `restrictTo(...roles)`.
-  Those exact names are referenced in the TODOs in `productRoutes.js` and
-  `categoryRoutes.js`.
-- `src/routes/authRoutes.js` — then uncomment the `/api/auth` mount in
-  `src/app.js`.
-- Rate limiting on login (`express-rate-limit`), marked with a TODO in
-  `src/app.js`.
+- `npm test` — 5 suites / 52 tests passing (in-memory MongoDB)
+- `npm run lint` — 0 errors (some intentional `console` warnings in
+  `server.js`, `db.js`, `seed.js`)
+- `npm start` connects to the configured `MONGO_URI` (Atlas) and serves
+  the API on `PORT`.
 
-Already there for you: the `User` schema (with `password` set to
-`select: false`, an 8-character minimum and a unique email index) and
-`UserRepository`, which has `findByEmailWithPassword()` for the login path
-and `emailExists()` for the duplicate-registration 409.
+## Environment
 
-**Until this lands, the admin-only product and category write endpoints are
-unprotected.** The TODO comments in both route files say exactly which
-guards to restore.
-
-## Person 3 — Shopping Cart API — TO BUILD
-
-The files exist but are **empty stubs**, each with a header comment
-describing what belongs in it:
-
-- `src/services/cartService.js`
-- `src/controllers/cartController.js`
-- `src/routes/cartRoutes.js`
-- `tests/cart.integration.test.js` (10 `test.todo` entries)
-- `client/` — React project, see `client/README.md`
-
-What to create:
-
-- `src/services/cartService.js` — add item, change quantity, remove item,
-  calculate totals.
-- `src/controllers/cartController.js` and `src/routes/cartRoutes.js` — then
-  uncomment the `/api/cart` mount in `src/app.js`.
-- Tests.
-
-Already there for you: the `Cart` schema (embedded `cartItemSchema`, one
-cart per user via a unique `userId` index) and `CartRepository`, which has
-`findOrCreateByUser()` and `clear()`. The cart routes will need Person 2's
-`protect` middleware.
-
----
-
-## Unassigned — Orders
-
-`Order` schema and `OrderRepository` exist. `src/services/orderService.js`,
-`src/controllers/orderController.js`, `src/routes/orderRoutes.js` and
-`tests/order.integration.test.js` are empty stubs. Orders depend on both
-auth and the cart, and no brief covers them — someone needs to pick this up. `ProductRepository.decrementStock()` is
-already written for checkout: it is atomic and refuses to oversell.
-
-## Also outstanding
-
-- **No git repository.** `git init`, commit, push.
-- No `.env` — copy `.env.example` and fill in `MONGO_URI` and `JWT_SECRET`.
-
----
-
-## A note on the stub files
-
-Every file listed as "TO BUILD" exists and is committed, so the folder
-structure is complete and the repository shows the full shape of the
-project. They export nothing — `module.exports = {}` — apart from the route
-files, which export an empty Express router.
-
-The `/api/auth`, `/api/cart` and `/api/orders` mounts in `src/app.js` stay
-commented out until the handlers behind them are real. Uncommenting a mount
-before its controller has handlers will crash the app on boot.
-
-`npm test` passes on the current tree: the unbuilt suites are `test.todo`
-entries, which jest reports as pending rather than failing.
+Copy `.env.example` to `.env` and fill in real values. `.env` is
+gitignored — never commit real secrets to `.env.example` either. The
+JWT access and refresh secrets should be two distinct random strings of
+at least 32 bytes per the deployment plan.

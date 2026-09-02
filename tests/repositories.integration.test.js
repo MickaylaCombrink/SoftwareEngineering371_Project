@@ -27,34 +27,34 @@ test('declared indexes exist in MongoDB', async () => {
 });
 
 test('BaseRepository CRUD works through a subclass', async () => {
-  const cat = await categoryRepository.create({ category: 'Laptops', description: 'Portable computers' });
-  const prod = await productRepository.create({ productName: 'ThinkPad', description: 'Solid', price: 1000, stock: 5, category: cat._id });
+  const cat = await categoryRepository.create({ category: 'Floral', description: 'Fragrances with dominant flower notes' });
+  const prod = await productRepository.create({ productName: 'Midnight Sun', description: 'A luminous white-floral bouquet', price: 479.99, stock: 5, category: cat._id });
   expect(await productRepository.count()).toBe(1);
   expect(await productRepository.findById(prod._id)).toBeTruthy();
-  const updated = await productRepository.updateById(prod._id, { price: 900 });
-  expect(updated.price).toBe(900);
-  expect(await productRepository.exists({ productName: 'ThinkPad' })).toBe(true);
+  const updated = await productRepository.updateById(prod._id, { price: 399.99 });
+  expect(updated.price).toBe(399.99);
+  expect(await productRepository.exists({ productName: 'Midnight Sun' })).toBe(true);
   await productRepository.deleteById(prod._id);
   expect(await productRepository.count()).toBe(0);
   expect(await productRepository.findById(new mongoose.Types.ObjectId())).toBeNull();
 });
 
 test('updateById runs schema validators', async () => {
-  const p = await productRepository.create({ productName: 'X', description: 'd', price: 10, stock: 1 });
+  const p = await productRepository.create({ productName: 'Test', description: 'd', price: 10, stock: 1 });
   await expect(productRepository.updateById(p._id, { price: -5 })).rejects.toThrow(/Price cannot be negative/);
 });
 
 test('ProductRepository.search builds the catalogue filter', async () => {
-  const cat = await categoryRepository.create({ category: 'Phones', description: 'Handsets' });
-  await productRepository.create({ productName: 'Cheap', description: 'd', price: 100, stock: 0, category: cat._id });
-  await productRepository.create({ productName: 'Mid', description: 'd', price: 500, stock: 3, category: cat._id });
-  await productRepository.create({ productName: 'Pricey', description: 'd', price: 900, stock: 2, category: cat._id });
-  expect((await productRepository.search({ category: cat._id, minPrice: 200, maxPrice: 800 })).map(p => p.productName)).toEqual(['Mid']);
+  const cat = await categoryRepository.create({ category: 'Woody', description: 'Warm, earthy scents' });
+  await productRepository.create({ productName: 'Cedar', description: 'd', price: 100, stock: 0, category: cat._id });
+  await productRepository.create({ productName: 'Sandalwood', description: 'd', price: 500, stock: 3, category: cat._id });
+  await productRepository.create({ productName: 'Oud', description: 'd', price: 900, stock: 2, category: cat._id });
+  expect((await productRepository.search({ category: cat._id, minPrice: 200, maxPrice: 800 })).map(p => p.productName)).toEqual(['Sandalwood']);
   expect((await productRepository.search({ category: cat._id, inStock: 'true' })).length).toBe(2);
 });
 
 test('decrementStock refuses to oversell', async () => {
-  const p = await productRepository.create({ productName: 'Limited', description: 'd', price: 10, stock: 2 });
+  const p = await productRepository.create({ productName: 'Limited Edition', description: 'd', price: 10, stock: 2 });
   expect((await productRepository.decrementStock(p._id, 2)).stock).toBe(0);
   expect(await productRepository.decrementStock(p._id, 1)).toBeNull();
 });
