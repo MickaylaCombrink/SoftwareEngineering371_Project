@@ -9,7 +9,7 @@
  */
 const express = require('express');
 const cartController = require('../controllers/cartController');
-const { protect } = require('../middleware/auth');
+const {protect} = require('../middleware/auth');
 
 const router = express.Router();
 

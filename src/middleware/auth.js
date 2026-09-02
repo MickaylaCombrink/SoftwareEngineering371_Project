@@ -61,8 +61,6 @@ exports.restrictTo =
     next();
   };
 
-  const {verifyAccessToken} = require('../utils/token');
-const AppError = require('../utils/AppError');
 
 function protect(req, res, next){
     const authHeader = req.headers['authorization'];
