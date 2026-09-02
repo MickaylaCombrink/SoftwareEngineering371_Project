@@ -5,9 +5,9 @@ node_modules/
 
 # environment — NEVER commit real secrets
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.example
+*.bak
 
 # build output
 dist/

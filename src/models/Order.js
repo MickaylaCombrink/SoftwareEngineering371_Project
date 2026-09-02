@@ -4,9 +4,7 @@ const orderItemSchema = new mongoose.Schema(
   {
     productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
     name: { type: String, required: true },
-    // Snapshot of the price at purchase time — deliberately NOT a live
-    // reference to Product.price, so later price changes never mutate
-    // historic orders (see representative test case in the plan).
+    // Price snapshot, so later price changes never alter historic orders
     unitPrice: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
   },
@@ -35,21 +33,18 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ---------------------------------------------------------------------
 // Indexes
-// ---------------------------------------------------------------------
 
-// GET /api/orders — a user's own order history, newest first. The most
-// frequent read in the API; userId equality then createdAt for the sort.
+// GET /api/orders - a user's own order history, newest first
 orderSchema.index({ userId: 1, createdAt: -1 });
 
-// Admin fulfilment queue, e.g. every Pending order oldest-first.
+// Admin fulfilment queue
 orderSchema.index({ orderStatus: 1, createdAt: -1 });
 
-// Reconciling payments / retrying failed ones.
+// Reconciling payments / retrying failed ones
 orderSchema.index({ paymentStatus: 1 });
 
-// Sales reporting: every order line containing a given product.
+// Sales reporting: every order line containing a product
 orderSchema.index({ 'items.productId': 1 });
 
 module.exports = mongoose.model('Order', orderSchema);

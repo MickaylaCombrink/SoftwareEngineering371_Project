@@ -1,26 +1,3 @@
-/**
- * UNASSIGNED — Orders.
- *
- * Checkout: read the user's cart, verify stock, snapshot each line item's
- * price into the order, decrement stock, empty the cart.
- *
- * Consistency strategy — intended saga for the reasons below:
- *   1. Stock is decremented atomically per line via
- *      productRepository.decrementStock(), which refuses to oversell.
- *   2. If anything fails AFTER a decrement but BEFORE the order is
- *      committed, the decrement is rolled back (stock restored) so no
- *      product can be "lost" without an order to show for it.
- *   3. The cart is only emptied once the order exists.
- *
- * A Mongo multi-document transaction would give the same guarantee in
- * one step, but it requires a replica-set deployment (Atlas qualifies;
- * a local standalone mongod and the in-memory test server do not). The
- * saga keeps checkout identical — and verifiable by the test suite — in
- * every environment, rather than having a different code path on Atlas.
- *
- * Storing a `unitPrice` snapshot on each order line is what keeps a later
- * price change from altering historic orders (see the plan's test case).
- */
 const AppError = require('../utils/AppError');
 const {
   cartRepository,
@@ -36,8 +13,7 @@ class OrderService {
       throw AppError.badRequest('Your cart is empty. Add items before checking out.');
     }
 
-    // Verify stock up front so we fail fast with a clear 422 rather than
-    // rolling anything back.
+    // Verify stock up front so a shortage fails before anything is written
     for (const item of cart.items) {
       const product = await productRepository.findById(item.productId);
       if (!product) {
@@ -55,7 +31,7 @@ class OrderService {
     const orderItems = cart.items.map((item) => ({
       productId: item.productId,
       name: item.name,
-      // Snapshot of the unit price at purchase time.
+      // Price snapshot, so later price changes never alter this order
       unitPrice: item.unitPrice,
       quantity: item.quantity,
     }));
@@ -65,8 +41,7 @@ class OrderService {
       0
     );
 
-    // Record which lines we decremented, so the rollback loop below only
-    // touches stocks that were actually reduced.
+    // Track decremented lines so the rollback only restores those
     const decremented = [];
 
     try {
@@ -91,9 +66,7 @@ class OrderService {
 
       return order;
     } catch (err) {
-      // Undo any stock decrements so a failed checkout does not consume
-      // inventory. Ignore errors here: the compensating write is best
-      // effort, and the failure that triggered the catch is more important.
+      // Undo stock decrements: best effort, the original error matters more
       await Promise.all(
         decremented.map((o) =>
           productRepository
@@ -115,8 +88,7 @@ class OrderService {
       if (isAdmin) {
         throw AppError.notFound('No order found with that ID.');
       }
-      // The caller may either not own it or it may not exist — respond with
-      // 403 either way so we never leak whether an order id is valid.
+      // 403 whether or not it exists, so order ids are never leaked
       throw AppError.forbidden('You do not have permission to view this order.');
     }
     return order;

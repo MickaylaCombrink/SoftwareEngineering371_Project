@@ -1,12 +1,3 @@
-/**
- * PERSON 3 — Shopping Cart API.
- *
- * Route table (every route needs Person 2's `protect`):
- *   GET    /
- *   POST   /items
- *   PUT    /items/:productId
- *   DELETE /items
- */
 const express = require('express');
 const cartController = require('../controllers/cartController');
 const {protect} = require('../middleware/auth');

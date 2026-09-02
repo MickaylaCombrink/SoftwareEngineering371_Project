@@ -1,10 +1,3 @@
-/**
- * PERSON 3 — Shopping Cart API.
- *
- * HTTP concerns only — status codes and response shape. All business
- * rules live in cartService. req.user is populated by Person 2's
- * `protect` middleware.
- */
 const catchAsync = require('../utils/catchAsync');
 const cartService = require('../services/cartService');
 

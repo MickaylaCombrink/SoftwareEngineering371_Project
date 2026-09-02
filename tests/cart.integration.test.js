@@ -1,11 +1,3 @@
-/**
- * PERSON 3 — Shopping Cart API.
- *
- * Integration tests against an in-memory MongoDB, driving the API with
- * supertest. Every cart route requires a JWT (Person 2's `protect`), so a
- * user is registered first and the token is reused for the authenticated
- * calls.
- */
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -22,7 +14,7 @@ beforeAll(async () => {
   await mongoose.connect(mongoServer.getUri());
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
-  // Register a user and keep the token.
+  // Register a user and keep the token
   const reg = await request(app)
     .post('/api/auth/register')
     .send({

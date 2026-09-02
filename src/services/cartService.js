@@ -1,15 +1,3 @@
-/**
- * PERSON 3 — Shopping Cart API.
- *
- * Business rules live here, not in the controller: add item, change
- * quantity, remove item, calculate totals.
- *
- * Totals are always derived from the live product price on read (so the
- * customer always sees current pricing), but each line item also stores a
- * unitPrice snapshot for the eventual checkout. The stock check runs
- * BEFORE the cart is mutated and aborts early, satisfying the plan's
- * "quantity exceeds stock -> 422, cart unchanged" rule.
- */
 const AppError = require('../utils/AppError');
 const { cartRepository, productRepository } = require('../repositories');
 
@@ -30,9 +18,7 @@ class CartService {
       throw AppError.notFound('No product found with that ID.');
     }
 
-    // The customer may already have some of this product in the cart; the
-    // stock check must account for that, otherwise adding more is allowed
-    // to oversell.
+    // Account for what is already in the cart, or adding more could oversell
     const cart = await cartRepository.findOrCreateByUser(userId);
     const existing = cart.items.find(
       (i) => i.productId.toString() === productId.toString()
@@ -78,7 +64,7 @@ class CartService {
       throw AppError.notFound('That item is not in your cart.');
     }
 
-    // Bound by available stock (from the live product record).
+    // Bound by the live product stock
     const product = await productRepository.findById(productId);
     if (!product) {
       throw AppError.notFound('No product found with that ID.');
@@ -110,7 +96,7 @@ class CartService {
     return this._withTotals(cart);
   }
 
-  // Totals are computed from the live cart contents on every read.
+  // Totals are recomputed on every read
   _withTotals(cart) {
     const subtotal = cart.items.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,

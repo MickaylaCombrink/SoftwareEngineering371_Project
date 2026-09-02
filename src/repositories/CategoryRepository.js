@@ -6,7 +6,7 @@ class CategoryRepository extends BaseRepository {
     super(Category);
   }
 
-  /** Categories in alphabetical order — the default listing. */
+  // Categories in alphabetical order - the default listing
   async findAllSorted() {
     return this.findAll({}, { sort: { category: 1 } });
   }

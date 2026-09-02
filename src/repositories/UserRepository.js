@@ -6,20 +6,17 @@ class UserRepository extends BaseRepository {
     super(User);
   }
 
-  /** Look a user up by email. Password is excluded (schema select:false). */
+  // Look a user up by email. The password hash is excluded
   async findByEmail(email) {
     return this.findOne({ email: String(email).toLowerCase() });
   }
 
-  /**
-   * Login path only: same lookup but WITH the password hash, so the
-   * controller can bcrypt.compare against it.
-   */
+  // Login path: same lookup, but with the password hash
   async findByEmailWithPassword(email) {
     return this.findOne({ email: String(email).toLowerCase() }, { select: '+password' });
   }
 
-  /** Cheap existence check for the "email already in use -> 409" rule. */
+  // Cheap existence check for the "email already in use -> 409" rule
   async emailExists(email) {
     return this.exists({ email: String(email).toLowerCase() });
   }

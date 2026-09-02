@@ -1,20 +1,10 @@
-/**
- * Integration tests for the central error handler and the Categories API
- * (Person 4 — Error Handling and Categories).
- *
- * Run against an in-memory MongoDB (mongodb-memory-server), per the
- * plan's "Integration" test level.
- *
- * NOTE: the auth error cases (409 on duplicate registration, 400 on a short
- * password, 401 on bad credentials) belong to Person 2 and live with the
- * auth work — they are not in this file because /api/auth does not exist yet.
- */
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const app = require('../src/app');
 const Product = require('../src/models/Product');
 const Category = require('../src/models/Category');
+const User = require('../src/models/User');
 
 let mongoServer;
 let adminToken;
@@ -22,20 +12,24 @@ let adminToken;
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
-  // Build the declared indexes so the unique-constraint test is meaningful.
+  // Build the declared indexes so the unique-constraint test is meaningful
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
-  // The product/category write routes are admin-only; register an admin and
-  // keep the token so the authentication cases below reach the intended
-  // validation/duplicate handlers instead of the auth guard.
-  const admin = await request(app).post('/api/auth/register').send({
-    firstName: 'Mickayla',
-    lastName: 'Combrick',
+  // The product/category write routes are admin-only
+
+// Registration never grants the admin role, so promote the account directly
+  const adminCredentials = {
     email: 'mickayla.combrick@gmail.com',
     password: 'mickayla123',
-    role: 'admin',
+  };
+  await request(app).post('/api/auth/register').send({
+    firstName: 'Mickayla',
+    lastName: 'Combrick',
+    ...adminCredentials,
   });
-  adminToken = admin.body.token;
+  await User.updateOne({ email: adminCredentials.email }, { role: 'admin' });
+  const adminLogin = await request(app).post('/api/auth/login').send(adminCredentials);
+  adminToken = adminLogin.body.token;
 });
 
 afterAll(async () => {
@@ -161,8 +155,7 @@ describe('Unmatched route', () => {
   });
 
   test('a mounted route that lacks required input is not a 404', async () => {
-    // /api/auth/login and /api/cart are now mounted; bad requests on them
-    // return 400/401 rather than falling through to the 404 handler.
+    // /api/auth/login and /api/cart are now mounted
     const login = await request(app).post('/api/auth/login').send({});
     expect(login.statusCode).toBe(400);
 

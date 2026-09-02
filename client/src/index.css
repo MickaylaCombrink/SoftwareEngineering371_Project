@@ -1,0 +1,44 @@
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.products {
+  list-style: none;
+  padding: 0;
+}
+
+.products li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.in-stock {
+  color: #15803d;
+}
+
+.out-of-stock {
+  color: #b91c1c;
+}
+
+.error {
+  padding: 1rem;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  border-radius: 0.5rem;
+}

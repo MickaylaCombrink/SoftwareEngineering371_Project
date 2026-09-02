@@ -1,14 +1,3 @@
-/**
- * PERSON 2 — Login and Security.
- *
- * Sign and verify the access and refresh tokens. Standalone: this file
- * has no dependency on the rest of the skeleton.
- *
- * Two independent secrets are used so a leaked access token can never be
- * replayed as a refresh token and vice versa (see the System Plan's
- * configuration section — refresh falls back to the access secret only
- * when JWT_REFRESH_SECRET is left unset).
- */
 const jwt = require('jsonwebtoken');
 
 const ACCESS_SECRET = process.env.JWT_SECRET;

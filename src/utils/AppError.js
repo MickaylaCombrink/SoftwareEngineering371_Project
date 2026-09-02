@@ -1,14 +1,4 @@
-/**
- * App Error
- * Represents a predictable, "operational" error (bad input, not found,
- * duplicate resource, forbidden, etc.) as opposed to a programming bug.
- * Controllers throw/next() these; the global error handler knows how
- * to translate them into a clean JSON response.
- *
- * Both styles work and are equivalent:
- *   next(new AppError('No product found with that ID.', 404))
- *   next(AppError.notFound('No product found with that ID.'))
- */
+// Operational error: a predictable failure, as opposed to a bug
 class AppError extends Error {
   constructor(message, statusCode) {
     super(message);

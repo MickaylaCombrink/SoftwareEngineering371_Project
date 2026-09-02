@@ -26,14 +26,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ---------------------------------------------------------------------
-// Indexes
-// `email` already has a unique index from the field definition above
-// (that index is what makes a duplicate registration fail with 11000,
-// which errorHandler turns into a 409) — it must not be redeclared here.
-// ---------------------------------------------------------------------
+// email already has a unique index from its field definition: do not redeclare it
 
-// Admin user listing: filter by role, newest first.
+// Admin user listing: filter by role, newest first
 userSchema.index({ role: 1, createdAt: -1 });
 
 module.exports = mongoose.model('User', userSchema);

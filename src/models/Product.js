@@ -21,27 +21,21 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ---------------------------------------------------------------------
-// Indexes
-// These mirror the filters productRepository.search() builds, so the
-// catalogue query is served from an index instead of a collection scan.
-// ---------------------------------------------------------------------
+// Indexes mirror the filters productRepository.search() builds
 
-// GET /api/products?category=&minPrice=&maxPrice= — the common combined
-// filter. Equality field first, then the range field, so the index can
-// satisfy both parts of the query.
+// Equality field first, then the range field
 productSchema.index({ category: 1, price: 1 });
 
-// Price-only range queries, and price sorting.
+// Price-only range queries, and price sorting
 productSchema.index({ price: 1 });
 
-// ?inStock=true -> { stock: { $gt: 0 } }
+// ?inStock=true
 productSchema.index({ stock: 1 });
 
-// Default catalogue ordering (newest first).
+// Default catalogue ordering (newest first)
 productSchema.index({ createdAt: -1 });
 
-// Free-text search over the fields a shopper would type into a search box.
+// Free-text search over the fields a shopper would type into a search box
 productSchema.index(
   { productName: 'text', description: 'text' },
   { weights: { productName: 10, description: 1 }, name: 'product_text_search' }

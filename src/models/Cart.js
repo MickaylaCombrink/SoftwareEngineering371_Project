@@ -18,14 +18,9 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ---------------------------------------------------------------------
-// Indexes
-// `userId` already has a unique index from the field definition above —
-// that is what enforces exactly one cart per user.
-// ---------------------------------------------------------------------
+// userId already has a unique index from its field definition: one cart per user
 
-// "Is this product in anyone's cart?" — used when a product is edited
-// or deleted so stale line items can be found.
+// Find stale line items when a product is edited or deleted
 cartSchema.index({ 'items.productId': 1 });
 
 module.exports = mongoose.model('Cart', cartSchema);

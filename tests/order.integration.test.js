@@ -1,10 +1,3 @@
-/**
- * UNASSIGNED — Orders.
- *
- * Integration tests against an in-memory MongoDB. Checkout decrements
- * stock and empties the cart inside a transaction; historic orders keep
- * a unitPrice snapshot so later price changes never alter them.
- */
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -12,16 +5,16 @@ const app = require('../src/app');
 const Product = require('../src/models/Product');
 const Cart = require('../src/models/Cart');
 const Order = require('../src/models/Order');
+const User = require('../src/models/User');
 
 let mongoServer;
 
-// Two users: a plain customer and an admin. Each registers and keeps a token.
+// Two users: a plain customer and an admin
 let customerToken;
 let adminToken;
 
 beforeAll(async () => {
-  // Checkout uses the compensation (saga) pattern, so a plain standalone
-  // memory server is sufficient — no replica set required.
+  // Checkout uses a compensating saga, so a standalone memory server is enough
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
@@ -34,14 +27,19 @@ beforeAll(async () => {
   });
   customerToken = regCustomer.body.token;
 
-  const regAdmin = await request(app).post('/api/auth/register').send({
-    firstName: 'Momelezi',
-    lastName: 'Tyini',
+// Registration never grants the admin role, so promote the account directly
+  const adminCredentials = {
     email: 'momelezi.tyini@gmail.com',
     password: 'momelezi123',
-    role: 'admin',
+  };
+  await request(app).post('/api/auth/register').send({
+    firstName: 'Momelezi',
+    lastName: 'Tyini',
+    ...adminCredentials,
   });
-  adminToken = regAdmin.body.token;
+  await User.updateOne({ email: adminCredentials.email }, { role: 'admin' });
+  const adminLogin = await request(app).post('/api/auth/login').send(adminCredentials);
+  adminToken = adminLogin.body.token;
 });
 
 afterAll(async () => {
@@ -97,11 +95,11 @@ describe('Orders', () => {
   });
 
   test('checkout when stock ran out -> 422, nothing committed', async () => {
-    // Stock is fine when the item is added to the cart (quantity 5 <= stock 5)...
+    // Stock is fine when the item is added to the cart (quantity 5 <= stock 5)
     const product = await createProduct({ stock: 5 });
     await seedCartFor(customerToken, product, 5);
 
-    // ...but another buyer reduces it to 1 before this customer checks out.
+    // ...but another buyer reduces it to 1 before this customer checks out
     product.stock = 1;
     await product.save();
 
@@ -110,7 +108,7 @@ describe('Orders', () => {
       .set('Authorization', `Bearer ${customerToken}`);
 
     expect(res.statusCode).toBe(422);
-    // Stock unchanged and no order created.
+    // Stock unchanged and no order created
     expect((await Product.findById(product._id)).stock).toBe(1);
     expect(await Order.countDocuments()).toBe(0);
   });
@@ -124,7 +122,7 @@ describe('Orders', () => {
       .set('Authorization', `Bearer ${customerToken}`);
     const orderId = orderRes.body.data.order._id;
 
-    // Change the product price AFTER the order was placed.
+    // Change the product price AFTER the order was placed
     await Product.findByIdAndUpdate(product._id, { price: 9999 });
 
     const getRes = await request(app)
@@ -146,7 +144,7 @@ describe('Orders', () => {
     await seedCartFor(customerToken, product, 1);
     await request(app).post('/api/orders').set('Authorization', `Bearer ${customerToken}`);
 
-    // Some other user's order must not appear.
+    // Some other user's order must not appear
     const other = await request(app).post('/api/auth/register').send({
       firstName: 'Other',
       lastName: 'Person',

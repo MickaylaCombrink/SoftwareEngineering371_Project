@@ -1,24 +1,12 @@
-/**
- * PERSON 2 — Login and Security.
- *
- * HTTP concerns only — no queries in here. Business logic for token
- * issuance lives in a small helper at the bottom; every handler is
- * wrapped in catchAsync so rejections reach the central error handler.
- */
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../config/jwt');
 const { userRepository } = require('../repositories');
 
-// ---------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------
 
-// Refresh tokens are kept in an in-memory allow-list keyed by token.
-// Keeping it a simple Set in this module is adequate for the assignment;
-// for a production deployment this would move to a store (Redis / a DB
-// column) so it survives restarts and scales across instances.
+// Refresh tokens are kept in an in-memory allow-list keyed by token
 const refreshTokenStore = new Set();
 
 const emailInUseMessage = 'Incorrect email or password.';
@@ -27,17 +15,13 @@ const MIN_PASSWORD_LENGTH = 8;
 
 async function findByCredentials(email, password) {
   const user = await userRepository.findByEmailWithPassword(email);
-  // Hash comparison only runs when a user actually exists, but the same
-  // error is returned either way so the endpoint cannot be used to
-  // enumerate which emails are registered.
+  // Same result whether or not the email exists, so it cannot be used to enumerate accounts
   if (!user) return null;
   const isMatch = await bcrypt.compare(password, user.password);
   return isMatch ? user : null;
 }
 
-// The schema validates the stored value, which is a hash. The plaintext
-// password length must be enforced here, before hashing, so a short
-// password is rejected with a clear 400.
+// Length is checked on the plaintext, before hashing
 function validatePassword(password) {
   if (!password || password.length < MIN_PASSWORD_LENGTH) {
     throw AppError.badRequest(
@@ -46,8 +30,7 @@ function validatePassword(password) {
   }
 }
 
-// Strip the hash before it can leak in any response (created documents are
-// not affected by the schema's select:false).
+// Never return the password hash
 function publicUser(user) {
   const doc = user.toObject ? user.toObject() : user;
   const rest = { ...doc };
@@ -70,17 +53,14 @@ function sendTokens(res, user, statusCode = 200) {
   });
 }
 
-// ---------------------------------------------------------------------
 // Handlers
-// ---------------------------------------------------------------------
 
 // POST /api/auth/register
 exports.register = catchAsync(async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
 
   if (await userRepository.emailExists(email)) {
-    // Handled explicitly (not left to the Mongo 11000) so the customer
-    // edge already exists before we spend rounds on hashing.
+    // Checked explicitly so a duplicate never reaches the hashing step
     return next(
       AppError.conflict('An account with that email already exists.')
     );
@@ -94,7 +74,8 @@ exports.register = catchAsync(async (req, res, next) => {
     lastName,
     email,
     password: hashedPassword,
-    role: req.body.role || 'customer',
+    // Role is never taken from the request body: that would allow self-promotion to admin
+    role: 'customer',
   });
 
   sendTokens(res, user, 201);
@@ -138,7 +119,7 @@ exports.refresh = catchAsync(async (req, res, next) => {
 
   const payload = { id: user.id, role: user.role };
   const accessToken = signAccessToken(payload);
-  // Issue a fresh refresh token and drop the old one from the allow-list.
+  // Issue a fresh refresh token and drop the old one from the allow-list
   const newRefreshToken = signRefreshToken(payload);
   refreshTokenStore.delete(refreshToken);
   refreshTokenStore.add(newRefreshToken);

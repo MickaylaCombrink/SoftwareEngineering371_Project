@@ -6,15 +6,12 @@ class CartRepository extends BaseRepository {
     super(Cart);
   }
 
-  /** One cart per user — the unique index on userId guarantees it. */
+  // One cart per user, guaranteed by the unique index on userId
   async findByUser(userId, options = {}) {
     return this.findOne({ userId }, options);
   }
 
-  /**
-   * Fetch the user's cart, creating an empty one on first use so callers
-   * never have to handle "no cart yet" as a special case.
-   */
+  // Create the cart on first use so callers never handle a missing one
   async findOrCreateByUser(userId) {
     const existing = await this.findByUser(userId);
     if (existing) return existing;
@@ -22,7 +19,7 @@ class CartRepository extends BaseRepository {
     return this.create({ userId, items: [] });
   }
 
-  /** Empty the cart after a successful checkout. */
+  // Empty the cart after a successful checkout
   async clear(userId, options = {}) {
     const { session } = options;
 

@@ -1,22 +1,14 @@
 const AppError = require('../utils/AppError');
 
-/**
- * ---------------------------------------------------------------------
- * Error transformers
- * Convert known third-party error shapes (Mongoose, JWT) into our own
- * AppError so the response format is always consistent, regardless of
- * where the error originated.
- * ---------------------------------------------------------------------
- */
+// Convert third-party error shapes into AppError so responses stay consistent
 
-// Invalid ObjectId in a route param, e.g. GET /api/products/not-a-valid-id
+// Invalid ObjectId in a route param
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
-// Duplicate unique index, e.g. registering with an email already in use
-// -> satisfies the "Register with an email already in use -> 409" test case
+// Duplicate unique index
 const handleDuplicateFieldsDB = (err) => {
   const field = Object.keys(err.keyValue || {})[0];
   const value = err.keyValue ? err.keyValue[field] : '';
@@ -26,8 +18,7 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 409);
 };
 
-// Mongoose schema validation failures (e.g. password too short)
-// -> satisfies the "Register with a 6-character password -> 400" test case
+// Mongoose schema validation failures
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data: ${errors.join('. ')}`;
@@ -40,14 +31,10 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
   new AppError('Your session has expired. Please log in again.', 401);
 
-/**
- * ---------------------------------------------------------------------
- * Environment-specific response formatters
- * ---------------------------------------------------------------------
- */
+// Environment-specific response formatters
 
 const sendErrorDev = (err, res) => {
-  // Verbose response for local/staging debugging: include stack trace
+  // Verbose response for local debugging
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -64,8 +51,7 @@ const sendErrorProd = (err, res) => {
       message: err.message,
     });
   } else {
-    // Unknown/programming error: never leak internals to the client
-    // eslint-disable-next-line no-console
+    // Unknown error: never leak internals to the client
     console.error('UNEXPECTED ERROR ', err);
     res.status(500).json({
       status: 'error',
@@ -74,12 +60,7 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-/**
- * globalErrorHandler
- * Express recognizes this as error-handling middleware because it
- * declares 4 parameters (err, req, res, next). Must be registered
- * LAST in app.js, after notFound and all routes.
- */
+// Express treats a four-argument function as the error handler
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';

@@ -9,11 +9,6 @@ const categorySchema = new mongoose.Schema({
   description: { type: String, required: [true, 'Description is required.'] },
 });
 
-// ---------------------------------------------------------------------
-// Indexes
-// `category` already carries a unique index from the field definition
-// above, which covers both the uniqueness rule and the alphabetical
-// listing, so no further index is needed on this collection.
-// ---------------------------------------------------------------------
+// category already carries a unique index from its field definition
 
 module.exports = mongoose.model('Category', categorySchema);

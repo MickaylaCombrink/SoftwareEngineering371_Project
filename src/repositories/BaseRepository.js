@@ -1,22 +1,5 @@
-/**
- * BaseRepository
- *
- * Repository pattern (System Plan > Design Patterns Choice): the data
- * access layer sits between the controllers and Mongoose, so controllers
- * never build queries themselves and the persistence library can be
- * swapped or mocked without touching HTTP code.
- *
- * Every model repository extends this class and inherits the standard
- * CRUD set; model-specific queries are added as methods on the subclass.
- *
- * Note on errors: these methods return null for "not found" rather than
- * throwing. Deciding that a missing document is a 404 is an HTTP concern
- * and stays in the controller, where AppError lives.
- */
+// Repository pattern: shared CRUD so controllers never build queries themselves
 class BaseRepository {
-  /**
-   * @param {import('mongoose').Model} model A Mongoose model.
-   */
   constructor(model) {
     if (!model) {
       throw new Error('BaseRepository requires a Mongoose model.');
@@ -24,11 +7,7 @@ class BaseRepository {
     this.model = model;
   }
 
-  /**
-   * Find many documents.
-   * @param {object} filter   Mongo filter, e.g. { stock: { $gt: 0 } }
-   * @param {object} options  { sort, limit, skip, select, populate, session }
-   */
+  // Find many documents
   async findAll(filter = {}, options = {}) {
     const { sort, limit, skip, select, populate, session } = options;
 
@@ -44,11 +23,7 @@ class BaseRepository {
     return query.exec();
   }
 
-  /**
-   * Find a single document by its _id. Returns null when absent.
-   * An invalid ObjectId throws a CastError, which the global error
-   * handler converts into a 400.
-   */
+  // Find one document by _id, or null
   async findById(id, options = {}) {
     const { select, populate, session } = options;
 
@@ -61,7 +36,7 @@ class BaseRepository {
     return query.exec();
   }
 
-  /** Find the first document matching a filter, or null. */
+  // Find the first document matching a filter, or null
   async findOne(filter, options = {}) {
     const { select, populate, session } = options;
 
@@ -74,11 +49,7 @@ class BaseRepository {
     return query.exec();
   }
 
-  /**
-   * Create one document. Pass { session } inside a transaction — the
-   * array form of Model.create is used because that is the only form
-   * Mongoose accepts a session with.
-   */
+  // Create one document
   async create(data, options = {}) {
     const { session } = options;
 
@@ -89,11 +60,7 @@ class BaseRepository {
     return this.model.create(data);
   }
 
-  /**
-   * Update by _id and return the UPDATED document (or null).
-   * Validators run on update, so schema rules (min price, enums, ...)
-   * are enforced on edits as well as on inserts.
-   */
+  // Update by _id, returning the updated document. Validators run on update
   async updateById(id, update, options = {}) {
     const { session, populate } = options;
 
@@ -109,7 +76,7 @@ class BaseRepository {
     return query.exec();
   }
 
-  /** Delete by _id. Returns the deleted document, or null if absent. */
+  // Delete by _id, returning the deleted document or null
   async deleteById(id, options = {}) {
     const { session } = options;
 
@@ -119,12 +86,12 @@ class BaseRepository {
     return query.exec();
   }
 
-  /** Count documents matching a filter. */
+  // Count documents matching a filter
   async count(filter = {}) {
     return this.model.countDocuments(filter).exec();
   }
 
-  /** True when at least one document matches. */
+  // True when at least one document matches
   async exists(filter) {
     const found = await this.model.exists(filter);
     return Boolean(found);

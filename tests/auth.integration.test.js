@@ -1,9 +1,3 @@
-/**
- * PERSON 2 — Login and Security.
- *
- * Integration tests against an in-memory MongoDB, driving the API with
- * supertest, following the setup in tests/errorHandling.integration.test.js.
- */
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -101,7 +95,7 @@ describe('Authentication', () => {
   });
 
   test('GET /me with an expired token -> 401', async () => {
-    // Mint a token that is already expired by signing with a tiny lifespan.
+    // Mint a token that is already expired by signing with a tiny lifespan
     const jwt = require('jsonwebtoken');
     const expired = jwt.sign({ id: new mongoose.Types.ObjectId().toString() }, process.env.JWT_SECRET, {
       expiresIn: -10,

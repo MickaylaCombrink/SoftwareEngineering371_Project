@@ -1,15 +1,4 @@
-/**
- * Data access layer entry point.
- *
- * Each repository is exported as a ready-to-use singleton, so a
- * controller only needs:
- *
- *   const { productRepository } = require('../repositories');
- *   const products = await productRepository.search(req.query);
- *
- * The classes are exported alongside them for tests that want a fresh
- * instance or a stubbed model.
- */
+// Data access layer entry point
 const BaseRepository = require('./BaseRepository');
 
 const userRepository = require('./UserRepository');

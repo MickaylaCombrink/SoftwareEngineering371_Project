@@ -1,17 +1,3 @@
-/**
- * PERSON 2 — Login and Security.
- *
- * Token and role checking middleware.
- *
- *   protect            verifies the Bearer token, loads the user onto
- *                      req.user, 401s on missing/invalid/expired tokens
- *   restrictTo(...roles)  403s when req.user.role is not in the list.
- *                      Must run after protect.
- *
- * Failures are forwarded with next(new AppError(...)) so they land in the
- * central error handler, which also translates raw JsonWebTokenError and
- * TokenExpiredError into 401s.
- */
 const { verifyAccessToken } = require('../config/jwt');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
@@ -30,12 +16,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   try {
     decoded = verifyAccessToken(token);
   } catch (err) {
-    // JsonWebTokenError and TokenExpiredError are translated to 401 by
-    // the central error handler.
+    // JWT errors are translated to 401 by the central error handler
     return next(err);
   }
 
-  // The user might have been deleted after the token was issued.
+  // Re-read the user rather than trusting the payload: the account may have been deleted or demoted
   const user = await userRepository.findById(decoded.id);
   if (!user) {
     return next(AppError.unauthorized('The user belonging to this token no longer exists.'));
@@ -60,38 +45,3 @@ exports.restrictTo =
 
     next();
   };
-
-
-function protect(req, res, next){
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.startsWith('Bearer ')
-    ? authHeader.split(' ')[1]
-    : null;
-
-    if (!token) {
-        return next(new AppError('Not Logged In. Log In to gain access', 401));
-    }
-
-    try {const decoded = verifyAccessToken(token);
-        req.user = decoded;
-        next();
-    }
-    catch (err) {
-        next(new AppError('Invalid or expired Token', 401));
-    }
-}
-
-function restrictTo(...roles) {
-    return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return next(new AppError('You do not have permission for this action', 403));
-
-        }
-        next();
-    }
-}
-
-module.exports = {
-    protect,
-    restrictTo
-};
