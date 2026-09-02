@@ -7,7 +7,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 
 // TODO (Person 2 — Login and Security): create src/routes/authRoutes.js
 //      and uncomment the mount below.
-// const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // TODO (Person 3 — Shopping Cart API): create src/routes/cartRoutes.js
 //      and uncomment the mount below.
