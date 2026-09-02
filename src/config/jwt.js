@@ -14,6 +14,6 @@
  *   JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN
  *
  * `jsonwebtoken` is already a dependency.
- */
+ */  
 
 module.exports = {};
