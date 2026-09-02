@@ -13,10 +13,11 @@
 const express = require('express');
 const authController = require('../controllers/authController');
 const {protect} = require('../middleware/auth');
+const {authLimiter, loginLimiter} = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-
+router.use(authLimiter)
 // TODO: router.post('/register', authController.register); etc.
 
 router.post('/register', authController.register);
