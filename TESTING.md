@@ -34,6 +34,7 @@ React Testing Library, rendering components in isolation with mocked contexts an
 - `Footer` — brand, navigation groups and copyright rendering.
 - `Login` / `Register` — field rendering, submit payloads, password mismatch guard, success/error toasts.
 - `Cart`, `Products`, `Home`, `Orders`, `Checkout`, `OrderDetail`, `ProductDetail`, `AdminDashboard`, `Profile`, `NotFound` — page-level rendering, loading states, empty states, and redirects.
+- `Profile` — includes the **Change Password** flow: calls `PUT /api/auth/change-password`, rejects mismatched confirmations without an API call, and signs the user out on success.
 
 ### 2.3 Function Testing (Contexts & Hooks)
 - `AuthContext` — session restore from `localStorage`, login persistence, logout cleanup, admin detection.
@@ -41,9 +42,11 @@ React Testing Library, rendering components in isolation with mocked contexts an
 - `useProducts` / `useOrders` hooks — API parameter mapping, error surfacing, loading state.
 
 ### 2.4 Backend Integration Testing (API)
-86 tests across 6 suites covering the full REST contract:
+91 tests across 6 suites covering the full REST contract:
 
-- **Auth** — registration, login, refresh-token rotation, logout, protected `/auth/me`.
+- **Auth** — registration, login, refresh-token rotation, logout, protected `/auth/me`,
+  **change-password** (wrong current password → 401, short new password → 400, happy path
+  flips which password logs in, and the user's refresh tokens are revoked).
 - **Products** — catalogue list with filters, single product, admin-only writes.
 - **Categories** — CRUD, admin guards, duplicate handling.
 - **Cart** — add/update/remove with stock bounds enforced server-side.
@@ -73,8 +76,8 @@ Automated user-flow tests simulate the acceptance journeys:
 
 | Area           | Stmts | Branch | Funcs | Lines |
 |----------------|-------|--------|-------|-------|
-| **All files**  | 77.91 | 65.39  | 76.51 | 79.05 |
-| controllers    | 95.32 | 90.14  | 93.54 | 95.26 |
+| **All files**  | 75.54 | 63.60  | 75.17 | 76.46 |
+| controllers    | 94.55 | 85.39  | 94.44 | 94.41 |
 | middleware     | 88.75 | 75.00  | 86.66 | 88.88 |
 | services       | 86.59 | 68.18  | 89.47 | 86.31 |
 | models         | 100   | 100    | 100   | 100   |
@@ -82,18 +85,19 @@ Automated user-flow tests simulate the acceptance journeys:
 | routes         | 100   | 100    | 100   | 100   |
 | utils          | 100   | 12.50  | 100   | 100   |
 | config (jwt)   | 38.46 | 23.07  | 50.00 | 38.46 |
+| scripts        | 0     | 0      | 0     | 0     |
 
-Interpretation: core business logic (controllers/services) is well covered (>86% lines). The low `src/config` figure reflects JWT sign/verify helpers exercised indirectly. `src/scripts/seed.js` is deliberately excluded from tests (data script).
+Interpretation: core business logic (controllers/services) is well covered (>86% lines). The low `src/config` figure reflects JWT sign/verify helpers exercised indirectly. `src/scripts` (seed + admin-password reset) are deliberately not unit-tested — they are one-shot data utilities whose output is verified by the integration suite and the live seed run.
 
 ### 4.2 Frontend (Vitest + @vitest/coverage-v8)
 
 | Area           | Stmts | Branch | Funcs | Lines |
 |----------------|-------|--------|-------|-------|
-| **All files**  | 80.04 | 63.55  | 72.59 | 82.02 |
-| components     | 82.69 | 70.58  | 72.22 | 84.00 |
+| **All files**  | 80.56 | 63.63  | 73.38 | 82.39 |
+| components     | 77.41 | 70.45  | 60.00 | 78.33 |
 | context        | 68.00 | 59.09  | 72.22 | 70.10 |
 | hooks          | 100   | 77.77  | 100   | 100   |
-| pages          | 84.07 | 63.00  | 73.61 | 87.80 |
+| pages          | 85.31 | 62.06  | 75.94 | 88.59 |
 | utils          | 100   | 100    | 100   | 100   |
 | api (axios)    | 53.57 | 27.27  | 71.42 | 55.55 |
 
@@ -113,7 +117,9 @@ npm run test:coverage        # + HTML coverage report (client/coverage/)
 
 ## 6. Summary
 
-- **172 tests total** (86 backend + 86 frontend), all passing.
-- Backend line coverage **79.05%**, frontend line coverage **82.02%**.
-- One production bug (checkout 404) and one crash bug (cart) caught before deployment.
+- **179 tests total** (91 backend + 88 frontend), all passing.
+- Backend line coverage **76.46%**, frontend line coverage **82.39%**.
+- Two production bugs (checkout 404, cart crash) caught before deployment, plus a flaky
+  admin-dashboard loading test fixed during the coverage pass.
+- Additional deliverable: `PUT /api/auth/change-password` + Profile UI, covered end-to-end.
 - Coverage output available as text + HTML (V8) per suite for the presentation.

@@ -31,7 +31,7 @@ export default function Login() {
         <div className="hidden md:flex flex-col justify-between p-10 bg-ink text-cream relative overflow-hidden">
           <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-gold/15 blur-3xl" />
           <div>
-            <p className="eyebrow">Maison</p>
+            <p className="eyebrow">Belgian</p>
             <p className="font-display text-3xl mt-1">Scent</p>
           </div>
           <div className="relative">
@@ -54,7 +54,7 @@ export default function Login() {
                 value={form.email}
                 onChange={handleChange}
                 className="input-lux"
-                placeholder="you@example.com"
+                placeholder="Email address"
               />
             </div>
             <div>

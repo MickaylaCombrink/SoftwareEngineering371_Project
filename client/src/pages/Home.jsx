@@ -42,14 +42,14 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center relative">
           <div className="animate-fade-up">
-            <p className="eyebrow mb-4">The Maison Collection &middot; 2026</p>
+            <p className="eyebrow mb-4">The Belgian Collection &middot; 2026</p>
             <h1 className="font-display text-4xl md:text-6xl text-balance leading-[1.08]">
               Discover Your
               <span className="block italic text-gold-2">Signature Scent</span>
             </h1>
             <p className="mt-6 text-cream/70 text-lg max-w-xl leading-relaxed">
-              From glowing ambers and rare ouds to the softest gourmands — a
-              hand-selected boutique of fragrances that speak before you do.
+              From glowing ambers and rare ouds to the softest gourmands<br />
+               a hand-selected boutique of fragrances that speak before you do.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Link to="/products" className="btn-gold text-base">

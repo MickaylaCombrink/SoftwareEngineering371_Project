@@ -136,3 +136,72 @@ describe('Authentication', () => {
     expect(res.statusCode).toBe(403);
   });
 });
+
+describe('Change password', () => {
+  function changePassword(token, body) {
+    return request(app)
+      .put('/api/auth/change-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send(body);
+  }
+
+  test('without a token -> 401', async () => {
+    const res = await request(app)
+      .put('/api/auth/change-password')
+      .send({ currentPassword: 'strongpass123', newPassword: 'brandnewpass123' });
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('with the wrong current password -> 401', async () => {
+    const reg = await register();
+    const res = await changePassword(reg.body.token, {
+      currentPassword: 'totallywrong',
+      newPassword: 'brandnewpass123',
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.body.message).toMatch(/current password/i);
+  });
+
+  test('with a too-short new password -> 400', async () => {
+    const reg = await register();
+    const res = await changePassword(reg.body.token, {
+      currentPassword: validUser.password,
+      newPassword: 'short',
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toMatch(/password/i);
+  });
+
+  test('happy path: old password stops working, new one logs in', async () => {
+    const reg = await register();
+
+    const res = await changePassword(reg.body.token, {
+      currentPassword: validUser.password,
+      newPassword: 'brandnewpass123',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toMatch(/updated/i);
+
+    const oldLogin = await login(validUser.email, validUser.password);
+    expect(oldLogin.statusCode).toBe(401);
+
+    const newLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email: validUser.email, password: 'brandnewpass123' });
+    expect(newLogin.statusCode).toBe(200);
+    expect(newLogin.body.token).toBeTruthy();
+  });
+
+  test('changing the password revokes the user refresh tokens', async () => {
+    const reg = await register();
+    const refreshToken = reg.body.refreshToken;
+
+    await changePassword(reg.body.token, {
+      currentPassword: validUser.password,
+      newPassword: 'brandnewpass123',
+    });
+
+    const res = await request(app).post('/api/auth/refresh').send({ refreshToken });
+    expect(res.statusCode).toBe(401);
+  });
+});

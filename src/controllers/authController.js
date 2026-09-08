@@ -6,8 +6,31 @@ const { userRepository } = require('../repositories');
 
 // Helpers
 
-// Refresh tokens are kept in an in-memory allow-list keyed by token
-const refreshTokenStore = new Set();
+// Refresh tokens are kept in an in-memory allow-list keyed by user id, so a
+// password change (or a future "log out everywhere") can revoke them per user.
+const refreshTokenStore = new Map(); // userId -> Set of refresh tokens
+
+function storeRefreshToken(userId, token) {
+  if (!refreshTokenStore.has(userId)) refreshTokenStore.set(userId, new Set());
+  refreshTokenStore.get(userId).add(token);
+}
+
+function hasRefreshToken(userId, token) {
+  const tokens = refreshTokenStore.get(userId);
+  return Boolean(tokens && tokens.has(token));
+}
+
+function removeRefreshToken(userId, token) {
+  const tokens = refreshTokenStore.get(userId);
+  if (tokens) {
+    tokens.delete(token);
+    if (tokens.size === 0) refreshTokenStore.delete(userId);
+  }
+}
+
+function revokeAllTokensForUser(userId) {
+  refreshTokenStore.delete(userId);
+}
 
 const emailInUseMessage = 'Incorrect email or password.';
 
@@ -43,7 +66,7 @@ function sendTokens(res, user, statusCode = 200) {
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
 
-  refreshTokenStore.add(refreshToken);
+  storeRefreshToken(user.id, refreshToken);
 
   res.status(statusCode).json({
     status: 'success',
@@ -101,7 +124,7 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.refresh = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
-  if (!refreshToken || !refreshTokenStore.has(refreshToken)) {
+  if (!refreshToken) {
     return next(AppError.unauthorized('Invalid or expired refresh token.'));
   }
 
@@ -109,6 +132,10 @@ exports.refresh = catchAsync(async (req, res, next) => {
   try {
     decoded = verifyRefreshToken(refreshToken);
   } catch (err) {
+    return next(AppError.unauthorized('Invalid or expired refresh token.'));
+  }
+
+  if (!hasRefreshToken(decoded.id, refreshToken)) {
     return next(AppError.unauthorized('Invalid or expired refresh token.'));
   }
 
@@ -121,8 +148,8 @@ exports.refresh = catchAsync(async (req, res, next) => {
   const accessToken = signAccessToken(payload);
   // Issue a fresh refresh token and drop the old one from the allow-list
   const newRefreshToken = signRefreshToken(payload);
-  refreshTokenStore.delete(refreshToken);
-  refreshTokenStore.add(newRefreshToken);
+  removeRefreshToken(user.id, refreshToken);
+  storeRefreshToken(user.id, newRefreshToken);
 
   res.status(200).json({
     status: 'success',
@@ -136,10 +163,51 @@ exports.logout = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
   if (refreshToken) {
-    refreshTokenStore.delete(refreshToken);
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (err) {
+      // Already expired/unknown: nothing to revoke, still a successful logout
+    }
+    if (decoded) removeRefreshToken(decoded.id, refreshToken);
   }
 
   res.status(200).json({ status: 'success' });
+});
+
+// PUT /api/auth/change-password (protect)
+exports.changePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return next(
+      AppError.badRequest('Please provide your current and new password.')
+    );
+  }
+
+  const user = await userRepository.findByEmailWithPassword(req.user.email);
+  if (!user) {
+    return next(AppError.unauthorized('This account no longer exists.'));
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    return next(AppError.unauthorized('Current password is incorrect.'));
+  }
+
+  validatePassword(newPassword);
+
+  user.password = await bcrypt.hash(newPassword, 12);
+  await user.save();
+
+  // Invalidate every refresh token this user holds, so the change takes effect
+  // everywhere immediately.
+  revokeAllTokensForUser(user.id);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Password updated. Please sign in again.',
+  });
 });
 
 // GET /api/auth/me (protect)

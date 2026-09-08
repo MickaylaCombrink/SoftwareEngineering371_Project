@@ -34,8 +34,9 @@ describe('AdminDashboard', () => {
   });
 
   it('shows a loading state', () => {
+    // Render directly: renderAdmin() would overwrite this pending mock
     api.get.mockReturnValue(new Promise(() => {}));
-    renderAdmin();
+    render(<AdminDashboard />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
