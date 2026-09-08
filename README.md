@@ -1,6 +1,12 @@
-# SoftwareEngineering371_Project — Milestone 2 (Backend)
+# SoftwareEngineering371_Project
 
-Express + MongoDB REST API for the e-commerce application.
+Two projects in one repository:
+
+- **root** - Express + MongoDB REST API (`src/`, `tests/`)
+- **`client/`** - React + Vite front end, with the shared API layer in
+  `client/src/api`. See `client/README.md` for the published method signatures.
+
+Run them in two terminals: the API on :5000, the client on :5173.
 
 ## Getting started
 
