@@ -3,8 +3,10 @@ export default function CategoryFilter({ categories, selected, onSelect }) {
     <div className="space-y-1">
       <button
         onClick={() => onSelect('')}
-        className={`block w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-          !selected ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+        className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all ${
+          !selected
+            ? 'bg-ink text-cream font-semibold shadow-lux'
+            : 'text-ink/70 hover:bg-ink/5 hover:text-ink'
         }`}
       >
         All Categories
@@ -13,8 +15,10 @@ export default function CategoryFilter({ categories, selected, onSelect }) {
         <button
           key={cat._id}
           onClick={() => onSelect(cat._id)}
-          className={`block w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-            selected === cat._id ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+          className={`block w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all ${
+            selected === cat._id
+              ? 'bg-ink text-cream font-semibold shadow-lux'
+              : 'text-ink/70 hover:bg-ink/5 hover:text-ink'
           }`}
         >
           {cat.category}

@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Home from './pages/Home';
@@ -23,7 +24,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <div className="min-h-screen bg-gray-50 flex flex-col">
+          <div className="min-h-screen bg-ivory flex flex-col">
             <Navbar />
             <main className="flex-1">
               <Routes>
@@ -59,11 +60,20 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            <footer className="bg-indigo-900 text-indigo-200 text-center py-4 text-sm">
-              &copy; {new Date().getFullYear()} Scent. All rights reserved.
-            </footer>
+            <Footer />
           </div>
-          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#17140f',
+                color: '#fffdf8',
+                borderRadius: '999px',
+                fontSize: '0.875rem',
+              },
+            }}
+          />
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

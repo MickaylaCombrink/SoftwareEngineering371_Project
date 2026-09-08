@@ -45,7 +45,7 @@ describe('Checkout page', () => {
     renderCheckout({ clearCart });
     fireEvent.click(screen.getByRole('button', { name: /place order/i }));
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith('/orders/checkout');
+      expect(api.post).toHaveBeenCalledWith('/orders');
       expect(clearCart).toHaveBeenCalled();
       expect(toast.success).toHaveBeenCalled();
     });

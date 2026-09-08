@@ -37,85 +37,55 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Create Account</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-              <input
-                id="firstName"
-                type="text"
-                name="firstName"
-                required
-                value={form.firstName}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-              />
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 card-lux overflow-hidden">
+        <div className="hidden md:flex flex-col justify-between p-10 bg-ink text-cream relative overflow-hidden order-last">
+          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gold/15 blur-3xl" />
+          <div className="relative mt-auto">
+            <p className="font-display italic text-3xl text-gold-2 leading-snug">“A perfume is a<br />silent story worn<br />close to the skin.”</p>
+            <p className="text-cream/50 text-sm mt-6 tracking-[0.2em] uppercase">Join the Maison</p>
+          </div>
+          <div className="relative">
+            <p className="eyebrow">Fresh member?</p>
+            <p className="text-cream/70 text-sm mt-2">Create your account and unlock member pricing, order tracking and first access to limited editions.</p>
+          </div>
+        </div>
+
+        <div className="p-8 sm:p-10 bg-cream">
+          <h2 className="font-display text-3xl text-ink">Create Account</h2>
+          <p className="text-ink/55 mt-1 text-sm">Begin your fragrance journey with us.</p>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-ink/80 mb-1.5">First Name</label>
+                <input id="firstName" type="text" name="firstName" required value={form.firstName} onChange={handleChange} className="input-lux" placeholder="Nathi" />
+              </div>
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-ink/80 mb-1.5">Last Name</label>
+                <input id="lastName" type="text" name="lastName" required value={form.lastName} onChange={handleChange} className="input-lux" placeholder="Mathenjwa" />
+              </div>
             </div>
-            <div className="flex-1">
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-              <input
-                id="lastName"
-                type="text"
-                name="lastName"
-                required
-                value={form.lastName}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-              />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-ink/80 mb-1.5">Email</label>
+              <input id="email" type="email" name="email" required value={form.email} onChange={handleChange} className="input-lux" placeholder="you@example.com" />
             </div>
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              required
-              minLength={8}
-              value={form.password}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
-          </div>
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              required
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {submitting ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-        <p className="text-sm text-gray-500 text-center mt-4">
-          Already have an account?{' '}
-          <Link to="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">Sign in</Link>
-        </p>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-ink/80 mb-1.5">Password</label>
+              <input id="password" type="password" name="password" required minLength={8} value={form.password} onChange={handleChange} className="input-lux" placeholder="Minimum 8 characters" />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-ink/80 mb-1.5">Confirm Password</label>
+              <input id="confirmPassword" type="password" name="confirmPassword" required value={form.confirmPassword} onChange={handleChange} className="input-lux" placeholder="Repeat your password" />
+            </div>
+            <button type="submit" disabled={submitting} className="w-full btn-gold text-base disabled:opacity-60">
+              {submitting ? 'Creating account...' : 'Create Account'}
+            </button>
+          </form>
+          <p className="text-sm text-ink/55 text-center mt-6">
+            Already have an account?{' '}
+            <Link to="/login" className="text-gold-3 font-semibold hover:text-ink transition-colors">Sign in</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

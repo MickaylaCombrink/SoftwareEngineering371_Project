@@ -14,44 +14,50 @@ export default function Navbar() {
     navigate('/');
   };
 
+  const desktopLink = 'text-sm font-medium text-cream/85 hover:text-gold-2 transition-colors tracking-wide';
+  const mobileLink = 'block py-2 text-sm text-cream/85 hover:text-gold-2 transition-colors tracking-wide';
+
   return (
-    <nav className="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-ink/95 backdrop-blur text-cream sticky top-0 z-50 border-b border-gold/20 shadow-lux">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="text-xl font-bold tracking-tight">
-            <span className="text-amber-400">S</span>cent
+        <div className="flex items-center justify-between h-18 py-3">
+          <Link to="/" className="group flex flex-col leading-none">
+            <span className="eyebrow text-gold-2 group-hover:text-gold transition-colors">Maison</span>
+            <span className="font-display text-2xl tracking-wide text-cream group-hover:text-gold-2 transition-colors">
+              Scent
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="hover:text-amber-300 transition-colors">Products</Link>
-            {isAuthenticated && <Link to="/orders" className="hover:text-amber-300 transition-colors">My Orders</Link>}
-            {isAdmin && <Link to="/admin" className="hover:text-amber-300 transition-colors">Admin</Link>}
+          <div className="hidden md:flex items-center gap-8">
+            <Link to="/products" className={desktopLink}>Products</Link>
+            {isAuthenticated && <Link to="/orders" className={desktopLink}>My Orders</Link>}
+            {isAdmin && <Link to="/admin" className={desktopLink}>Admin</Link>}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-5">
             {isAuthenticated ? (
               <>
-                <Link to="/cart" className="relative hover:text-amber-300 transition-colors">
+                <Link to="/cart" className="relative text-cream/90 hover:text-gold-2 transition-colors" aria-label="Cart">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
                   </svg>
                   {itemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-amber-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    <span className="absolute -top-1.5 -right-2 bg-gold text-ink text-[0.65rem] rounded-full h-5 w-5 flex items-center justify-center font-bold">
                       {itemCount}
                     </span>
                   )}
                 </Link>
-                <Link to="/profile" className="text-sm hover:text-amber-300 transition-colors hidden sm:block">
+                <Link to="/profile" className="hidden sm:block text-sm text-cream/85 hover:text-gold-2 transition-colors tracking-wide">
                   {user?.firstName}
                 </Link>
-                <button onClick={handleLogout} className="text-sm hover:text-amber-300 transition-colors hidden sm:block">
+                <button onClick={handleLogout} className="hidden sm:block text-sm text-cream/60 hover:text-gold-2 transition-colors tracking-wide">
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="hover:text-amber-300 transition-colors hidden sm:block">Login</Link>
-                <Link to="/register" className="bg-amber-500 text-indigo-900 px-3 py-1 rounded font-semibold hover:bg-amber-400 transition-colors">
+                <Link to="/login" className="hidden sm:block text-sm text-cream/85 hover:text-gold-2 transition-colors tracking-wide">Login</Link>
+                <Link to="/register" className="btn-gold py-2 px-5 text-sm shadow-none">
                   Register
                 </Link>
               </>
@@ -59,14 +65,14 @@ export default function Navbar() {
 
             <button
               onClick={() => setOpen(!open)}
-              className="md:hidden p-1 hover:text-amber-300 transition-colors"
+              className="md:hidden p-1 text-cream/90 hover:text-gold-2 transition-colors"
               aria-label="Toggle menu"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {open ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -75,18 +81,18 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="md:hidden bg-indigo-900 border-t border-indigo-800">
+        <div className="md:hidden bg-ink-soft border-t border-gold/15">
           <div className="px-4 py-2 space-y-1">
-            <Link to="/products" onClick={() => setOpen(false)} className="block py-2 hover:text-amber-300 transition-colors">Products</Link>
-            {isAuthenticated && <Link to="/orders" onClick={() => setOpen(false)} className="block py-2 hover:text-amber-300 transition-colors">My Orders</Link>}
-            {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="block py-2 hover:text-amber-300 transition-colors">Admin</Link>}
+            <Link to="/products" onClick={() => setOpen(false)} className={mobileLink}>Products</Link>
+            {isAuthenticated && <Link to="/orders" onClick={() => setOpen(false)} className={mobileLink}>My Orders</Link>}
+            {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className={mobileLink}>Admin</Link>}
             {isAuthenticated ? (
               <>
-                <Link to="/profile" onClick={() => setOpen(false)} className="block py-2 hover:text-amber-300 transition-colors">Profile</Link>
-                <button onClick={handleLogout} className="block py-2 hover:text-amber-300 transition-colors">Logout</button>
+                <Link to="/profile" onClick={() => setOpen(false)} className={mobileLink}>Profile</Link>
+                <button onClick={handleLogout} className={mobileLink}>Logout</button>
               </>
             ) : (
-              <Link to="/login" onClick={() => setOpen(false)} className="block py-2 hover:text-amber-300 transition-colors">Login</Link>
+              <Link to="/login" onClick={() => setOpen(false)} className={mobileLink}>Login</Link>
             )}
           </div>
         </div>

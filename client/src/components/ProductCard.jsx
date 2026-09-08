@@ -24,19 +24,20 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <Link
-      to={`/products/${product._id}`}
-      className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
-    >
-      <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+    <Link to={`/products/${product._id}`} className="group card-lux overflow-hidden flex flex-col hover:-translate-y-1.5 transition-transform duration-300">
+      <div className="aspect-square bg-blush overflow-hidden relative">
         {product.image?.[0] ? (
-          <img
-            src={product.image[0]}
-            alt={product.productName}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <>
+            <img
+              src={product.image[0]}
+              alt={product.productName}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <div className="w-full h-full flex items-center justify-center text-gold/60">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
@@ -44,19 +45,19 @@ export default function ProductCard({ product }) {
         )}
       </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="font-display text-lg text-ink group-hover:text-gold-3 transition-colors leading-snug truncate">
           {product.productName}
         </h3>
-        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-lg font-bold text-indigo-700">{formatZAR(product.price)}</span>
+        <p className="text-sm text-ink/55 mt-1.5 line-clamp-2 leading-relaxed">{product.description}</p>
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gold/15">
+          <span className="font-display text-xl font-semibold text-gold-3">{formatZAR(product.price)}</span>
           {outOfStock ? (
-            <span className="text-sm text-red-500 font-medium">Out of Stock</span>
+            <span className="chip bg-ink/5 text-ink/50 border border-ink/10">Out of Stock</span>
           ) : (
             <button
               onClick={handleAddToCart}
-              className="bg-amber-500 hover:bg-amber-600 text-indigo-900 text-sm font-bold px-3 py-1 rounded transition-colors"
+              className="px-4 py-1.5 rounded-full text-sm font-semibold text-ink bg-gold/15 hover:bg-gold hover:text-ink transition-colors border border-gold/30"
             >
               Add to Cart
             </button>

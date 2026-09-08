@@ -1,1 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-ink: #17140f;
+  --color-ink-soft: #221d15;
+  --color-ink-mute: #2c2619;
+  --color-ivory: #f7f2e9;
+  --color-cream: #fffdf8;
+  --color-gold: #c19a4d;
+  --color-gold-2: #e4c98b;
+  --color-gold-3: #9c7a33;
+  --color-blush: #efe3d4;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Jost", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --shadow-lux: 0 20px 50px -24px rgba(23, 20, 15, 0.35);
+  --shadow-gold: 0 12px 32px -12px rgba(193, 154, 77, 0.55);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(115deg, #d3ad5e, #b0863a 55%, #d3ad5e);
+    color: var(--color-ink);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.8rem 1.6rem;
+    border-radius: 9999px;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-gold);
+  }
+  .btn-gold:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 0.8rem 1.6rem;
+    border-radius: 9999px;
+    transition: all 0.25s ease;
+  }
+  .btn-ink:hover {
+    background: var(--color-ink-soft);
+    transform: translateY(-1px);
+  }
+  .card-lux {
+    background: var(--color-cream);
+    border: 1px solid rgba(193, 154, 77, 0.22);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-lux);
+  }
+  .input-lux {
+    width: 100%;
+    background: var(--color-cream);
+    border: 1px solid rgba(23, 20, 15, 0.16);
+    border-radius: 0.75rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.9375rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input-lux:focus {
+    outline: none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px rgba(193, 154, 77, 0.18);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .arch {
+    border-radius: 999px 999px 28px 28px;
+  }
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1.5deg); }
+  }
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up {
+    animation: fade-up 0.7s ease both;
+  }
+}
+
+/* Slim, on-brand scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ivory);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(193, 154, 77, 0.45);
+  border-radius: 999px;
+  border: 2px solid var(--color-ivory);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* Checkbox accent */
+input[type='checkbox'] {
+  accent-color: var(--color-gold);
+}

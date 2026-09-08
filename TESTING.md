@@ -31,6 +31,7 @@ React Testing Library, rendering components in isolation with mocked contexts an
 - `Navbar` — guest vs authenticated nav, admin-only link, cart badge count.
 - `CartItem` — quantity increment/decrement, remove with toast feedback, error toasts.
 - `ProtectedRoute` / `AdminRoute` — role-based access and loading spinners.
+- `Footer` — brand, navigation groups and copyright rendering.
 - `Login` / `Register` — field rendering, submit payloads, password mismatch guard, success/error toasts.
 - `Cart`, `Products`, `Home`, `Orders`, `Checkout`, `OrderDetail`, `ProductDetail`, `AdminDashboard`, `Profile`, `NotFound` — page-level rendering, loading states, empty states, and redirects.
 
@@ -60,6 +61,7 @@ Automated user-flow tests simulate the acceptance journeys:
 
 | Defect | Where | Found by | Fix |
 |--------|-------|----------|-----|
+| Checkout called `POST /orders/checkout` but the backend route is `POST /orders` — every checkout 404'd | `Checkout.jsx` | manual contract trace | Changed endpoint to `/orders` + updated test |
 | Cart state crashed the Cart page | `CartContext.jsx` reducer | CartContext component test | Reducer reads `payload.data.cart.items` (matched API shape) |
 | Backend Jest picked up frontend suites and failed | root `package.json` | full-suite run | Added `testMatch: tests/**/*.test.js` |
 | Admin "all orders" endpoint missing | backend | frontend Admin dashboard planning | Added `GET /api/orders/all` (admin-only) with tests |
@@ -87,7 +89,7 @@ Interpretation: core business logic (controllers/services) is well covered (>86%
 
 | Area           | Stmts | Branch | Funcs | Lines |
 |----------------|-------|--------|-------|-------|
-| **All files**  | 80.34 | 63.91  | 74.40 | 82.43 |
+| **All files**  | 80.04 | 63.55  | 72.59 | 82.02 |
 | components     | 82.69 | 70.58  | 72.22 | 84.00 |
 | context        | 68.00 | 59.09  | 72.22 | 70.10 |
 | hooks          | 100   | 77.77  | 100   | 100   |
@@ -111,7 +113,7 @@ npm run test:coverage        # + HTML coverage report (client/coverage/)
 
 ## 6. Summary
 
-- **168 tests total** (86 backend + 82 frontend), all passing.
-- Backend line coverage **79.05%**, frontend line coverage **82.43%**.
-- One production bug (cart crash) caught by tests before deployment.
+- **172 tests total** (86 backend + 86 frontend), all passing.
+- Backend line coverage **79.05%**, frontend line coverage **82.02%**.
+- One production bug (checkout 404) and one crash bug (cart) caught before deployment.
 - Coverage output available as text + HTML (V8) per suite for the presentation.

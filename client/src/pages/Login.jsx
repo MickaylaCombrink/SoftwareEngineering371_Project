@@ -26,46 +26,59 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Welcome Back</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 card-lux overflow-hidden">
+        <div className="hidden md:flex flex-col justify-between p-10 bg-ink text-cream relative overflow-hidden">
+          <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-gold/15 blur-3xl" />
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
+            <p className="eyebrow">Maison</p>
+            <p className="font-display text-3xl mt-1">Scent</p>
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              required
-              value={form.password}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
+          <div className="relative">
+            <p className="font-display italic text-4xl text-gold-2 leading-snug">“Luxury must be<br />comfortable,<br />otherwise it is<br />not luxury.”</p>
+            <p className="text-cream/50 text-sm mt-6 tracking-[0.2em] uppercase">A curated fragrance boutique</p>
           </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {submitting ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-        <p className="text-sm text-gray-500 text-center mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-indigo-600 hover:text-indigo-800 font-medium">Register</Link>
-        </p>
+        </div>
+
+        <div className="p-8 sm:p-10 bg-cream">
+          <h2 className="font-display text-3xl text-ink">Welcome Back</h2>
+          <p className="text-ink/55 mt-1 text-sm">Sign in to continue your collection.</p>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-ink/80 mb-1.5">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                required
+                value={form.email}
+                onChange={handleChange}
+                className="input-lux"
+                placeholder="you@example.com"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-ink/80 mb-1.5">Password</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                required
+                value={form.password}
+                onChange={handleChange}
+                className="input-lux"
+                placeholder="••••••••"
+              />
+            </div>
+            <button type="submit" disabled={submitting} className="w-full btn-gold text-base disabled:opacity-60">
+              {submitting ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+          <p className="text-sm text-ink/55 text-center mt-6">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-gold-3 font-semibold hover:text-ink transition-colors">Register</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
