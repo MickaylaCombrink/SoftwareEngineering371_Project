@@ -37,3 +37,6 @@ desktop.ini
 # misc
 .cache/
 tmp/
+
+# raw product photography source (app uses client/public/images)
+images/
