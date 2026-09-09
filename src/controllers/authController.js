@@ -1,13 +1,11 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../config/jwt');
-const { userRepository } = require('../repositories');
+const { userRepository, refreshTokenRepository } = require('../repositories');
 
 // Helpers
-
-// Refresh tokens are kept in an in-memory allow-list keyed by token
-const refreshTokenStore = new Set();
 
 const emailInUseMessage = 'Incorrect email or password.';
 
@@ -38,12 +36,30 @@ function publicUser(user) {
   return rest;
 }
 
-function sendTokens(res, user, statusCode = 200) {
+// Signs a refresh token and records it, using the token's own exp claim as
+// the row's expiry so the two can never disagree.
+//
+// The jti matters: a JWT is a pure function of its payload, and iat has only
+// second resolution, so two tokens signed for the same user in the same second
+// would be byte-identical and collide on the tokenHash unique index. A random
+// jti makes every issued token distinct.
+async function issueRefreshToken(user) {
+  const refreshToken = signRefreshToken({
+    id: user.id,
+    role: user.role,
+    jti: crypto.randomUUID(),
+  });
+  const { exp } = verifyRefreshToken(refreshToken);
+
+  await refreshTokenRepository.issue(user.id, refreshToken, new Date(exp * 1000));
+
+  return refreshToken;
+}
+
+async function sendTokens(res, user, statusCode = 200) {
   const payload = { id: user.id, role: user.role };
   const accessToken = signAccessToken(payload);
-  const refreshToken = signRefreshToken(payload);
-
-  refreshTokenStore.add(refreshToken);
+  const refreshToken = await issueRefreshToken(user);
 
   res.status(statusCode).json({
     status: 'success',
@@ -78,7 +94,7 @@ exports.register = catchAsync(async (req, res, next) => {
     role: 'customer',
   });
 
-  sendTokens(res, user, 201);
+  await sendTokens(res, user, 201);
 });
 
 // POST /api/auth/login
@@ -94,14 +110,16 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(AppError.unauthorized(emailInUseMessage));
   }
 
-  sendTokens(res, user);
+  await sendTokens(res, user);
 });
 
 // POST /api/auth/refresh
 exports.refresh = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
-  if (!refreshToken || !refreshTokenStore.has(refreshToken)) {
+  // Checked against the stored allow-list as well as the signature, so a
+  // revoked token is rejected even while it is still cryptographically valid
+  if (!refreshToken || !(await refreshTokenRepository.isActive(refreshToken))) {
     return next(AppError.unauthorized('Invalid or expired refresh token.'));
   }
 
@@ -117,12 +135,12 @@ exports.refresh = catchAsync(async (req, res, next) => {
     return next(AppError.unauthorized('The user belonging to this token no longer exists.'));
   }
 
-  const payload = { id: user.id, role: user.role };
-  const accessToken = signAccessToken(payload);
-  // Issue a fresh refresh token and drop the old one from the allow-list
-  const newRefreshToken = signRefreshToken(payload);
-  refreshTokenStore.delete(refreshToken);
-  refreshTokenStore.add(newRefreshToken);
+  // Rotation: the presented token is revoked before the replacement is issued,
+  // so it can never be used twice
+  await refreshTokenRepository.revoke(refreshToken);
+
+  const accessToken = signAccessToken({ id: user.id, role: user.role });
+  const newRefreshToken = await issueRefreshToken(user);
 
   res.status(200).json({
     status: 'success',
@@ -135,8 +153,10 @@ exports.refresh = catchAsync(async (req, res, next) => {
 exports.logout = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
+  // Always 200: an unknown or already-revoked token is not an error, and
+  // reporting the difference would leak which tokens exist
   if (refreshToken) {
-    refreshTokenStore.delete(refreshToken);
+    await refreshTokenRepository.revoke(refreshToken);
   }
 
   res.status(200).json({ status: 'success' });
