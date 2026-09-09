@@ -3,7 +3,7 @@
 A full-stack perfume boutique for **SEN371, Milestone 2–5**: an Express + MongoDB REST API
 (backend) and a React SPA (frontend). Includes a real product catalogue with photography,
 JWT authentication, role-based admin, cart, checkout, order tracking, and a full automated
-test suite (179 tests, ~80% line coverage).
+test suite (192 tests, ~80% line coverage).
 
 ```
 backend   Express + MongoDB  ──►  http://localhost:5000/api

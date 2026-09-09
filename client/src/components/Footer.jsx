@@ -35,7 +35,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-cream font-display text-lg mb-4">Visit Us</h4>
+            <h4 className="text-cream font-display text-lg mb-4">Customer Support</h4>
             <ul className="space-y-2 text-sm text-cream/60">
               <li className="flex items-start gap-2">
                 <span className="text-gold mt-0.5">&#9679;</span>
@@ -50,6 +50,7 @@ export default function Footer() {
                 <span>mthi6223@gmail.com</span>
               </li>
             </ul>
+            <p className="mt-4 text-xs text-cream/45">We reply within 24 hours &middot; Mon&#8211;Fri</p>
           </div>
         </div>
 

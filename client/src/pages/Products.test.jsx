@@ -49,7 +49,7 @@ function renderProducts() {
 describe('Products page', () => {
   it('renders the heading and product cards', async () => {
     renderProducts();
-    expect(await screen.findByText('Our Collection')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Our Collection' })).toBeInTheDocument();
     expect(screen.getByText('Midnight Sun')).toBeInTheDocument();
     expect(screen.getByText('Ocean Breeze')).toBeInTheDocument();
   });
@@ -62,5 +62,38 @@ describe('Products page', () => {
   it('shows categories from the API', async () => {
     renderProducts();
     expect(await screen.findByText('Floral')).toBeInTheDocument();
+  });
+
+  it('renders sort controls and numbered pagination when there are multiple pages', async () => {
+    useProducts.mockReturnValue({
+      products,
+      loading: false,
+      error: null,
+      query: {},
+      setQuery: vi.fn(),
+      page: 1,
+      pages: 3,
+      total: 6,
+    });
+    useCart.mockReturnValue({ addItem: vi.fn() });
+    useAuth.mockReturnValue({ isAuthenticated: true });
+    api.get.mockResolvedValue({
+      data: { data: { categories: [] } },
+    });
+    render(
+      <MemoryRouter initialEntries={['/products']}>
+        <Products />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('Midnight Sun')).toBeInTheDocument();
+    expect(screen.getByLabelText('Sort')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to page 2' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go to page 1' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('does not render pagination when there is only one page', () => {
+    renderProducts();
+    expect(screen.queryByLabelText('Pagination')).not.toBeInTheDocument();
   });
 });

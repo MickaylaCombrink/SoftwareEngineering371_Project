@@ -98,7 +98,7 @@ Coverage reports:
 - Backend: jest prints a table; also under `coverage/` (Istanbul).
 - Frontend: `cd client && npm run test:coverage` (V8 text + HTML in `client/coverage/`).
 
-Current status: backend 91 tests / 6 suites; frontend 88 tests / 23 suites (see `TESTING.md`).
+Current status: backend 92 tests / 6 suites; frontend 100 tests / 25 files (see `TESTING.md`).
 
 ---
 

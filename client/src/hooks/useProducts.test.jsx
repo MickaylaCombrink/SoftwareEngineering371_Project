@@ -55,4 +55,20 @@ describe('useProducts', () => {
       }));
     });
   });
+
+  it('passes sort and page to the API and exposes pagination meta', async () => {
+    api.get.mockResolvedValue({
+      data: { data: { products: [{ _id: 'p1', productName: 'Midnight Sun' }] }, page: 2, pages: 5, total: 9 },
+    });
+    const { result } = renderHook(() => useProducts({}));
+    result.current.setQuery({ sort: 'price-asc', page: 2 });
+    await waitFor(() => {
+      expect(api.get).toHaveBeenCalledWith('/products', expect.objectContaining({
+        params: { sort: 'price-asc', page: 2 },
+      }));
+    });
+    await waitFor(() => expect(result.current.page).toBe(2));
+    expect(result.current.pages).toBe(5);
+    expect(result.current.total).toBe(9);
+  });
 });

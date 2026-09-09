@@ -14,8 +14,8 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const desktopLink = 'text-sm font-medium text-cream/85 hover:text-gold-2 transition-colors tracking-wide';
-  const mobileLink = 'block py-2 text-sm text-cream/85 hover:text-gold-2 transition-colors tracking-wide';
+  const desktopLink = 'text-[0.78rem] font-medium uppercase tracking-[0.22em] text-cream/85 hover:text-gold-2 transition-colors';
+  const mobileLink = 'block py-2 text-sm uppercase tracking-[0.18em] text-cream/85 hover:text-gold-2 transition-colors';
 
   return (
     <nav className="bg-ink/95 backdrop-blur text-cream sticky top-0 z-50 border-b border-gold/20 shadow-lux">

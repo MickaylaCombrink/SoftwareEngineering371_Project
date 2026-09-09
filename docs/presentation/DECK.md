@@ -14,7 +14,7 @@ deck as plain markdown.
 # Slide 1 — Title
 
 **Scent: A Boutique Perfume Store, End to End**
-REST API · React SPA · Real Photography · 179 Automated Tests
+REST API · React SPA · Real Photography · 192 Automated Tests
 
 > Speaker notes: Intro. "Welcome. This is our e-commerce project for SEN371 — a perfume
 > boutique called Scent. In this demo we'll show a working store with real product
@@ -119,7 +119,7 @@ React SPA (Vite) ──HTTP /api──► Express API ──► MongoDB (Mongoos
 
 # Slide 8 — Testing strategy
 
-**179 tests, two suites, every layer**
+**192 tests, two suites, every layer**
 
 | Layer | Tool | Covers |
 |---|---|---|

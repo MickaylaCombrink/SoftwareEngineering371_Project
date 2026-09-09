@@ -115,8 +115,8 @@ password.
 **Actions:** In a terminal run `npm test` (backend) and `cd client && npm test` (frontend).
 
 **Narration:**
-> "To close, the tests. Backend: 91 integration tests against an in-memory MongoDB — real
-> Mongoose, real HTTP, no mocks at the database seam. Frontend: 88 tests through Testing
+> "To close, the tests. Backend: 92 integration tests against an in-memory MongoDB — real
+> Mongoose, real HTTP, no mocks at the database seam. Frontend: 100 tests through Testing
 > Library, including the user journeys you just watched. Combined line coverage is about 80%,
 > and the full report with coverage tables and our defect log is in TESTING.md."
 

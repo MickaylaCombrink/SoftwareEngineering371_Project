@@ -21,7 +21,8 @@ describe('Footer', () => {
   it('renders account and contact sections', () => {
     renderFooter();
     expect(screen.getByText('Create Account')).toBeInTheDocument();
-    expect(screen.getByText('Visit Us')).toBeInTheDocument();
+    expect(screen.getByText('Customer Support')).toBeInTheDocument();
+    expect(screen.getByText(/within 24 hours/i)).toBeInTheDocument();
   });
 
   it('includes the copyright line', () => {

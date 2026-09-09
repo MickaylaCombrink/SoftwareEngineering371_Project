@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import CategoryFilter from '../components/CategoryFilter';
 import PriceFilter from '../components/PriceFilter';
+import Pagination from '../components/Pagination';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,14 +14,14 @@ export default function Products() {
   const [maxPrice, setMaxPrice] = useState('');
 
   const categoryParam = searchParams.get('category') || '';
-  const { products, loading, error, query, setQuery } = useProducts({ category: categoryParam });
+  const { products, loading, error, query, setQuery, page, pages } = useProducts({ category: categoryParam });
 
   useEffect(() => {
     api.get('/categories').then(({ data }) => setCategories(data.data.categories)).catch(() => {});
   }, []);
 
   useEffect(() => {
-    setQuery((prev) => ({ ...prev, category: categoryParam }));
+    setQuery((prev) => ({ ...prev, category: categoryParam, page: undefined }));
   }, [categoryParam, setQuery]);
 
   const handleCategoryChange = (catId) => {
@@ -37,15 +38,51 @@ export default function Products() {
   };
 
   const applyPriceFilter = () => {
-    setQuery((prev) => ({ ...prev, minPrice, maxPrice }));
+    setQuery((prev) => ({ ...prev, minPrice, maxPrice, page: undefined }));
+  };
+
+  const handleSortChange = (e) => {
+    const sort = e.target.value || undefined;
+    setQuery((prev) => ({ ...prev, sort, page: undefined }));
+  };
+
+  const handlePageChange = (n) => {
+    setQuery((prev) => ({ ...prev, page: n }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <header className="mb-10">
-        <p className="eyebrow mb-2">The boutique</p>
-        <h1 className="font-display text-4xl text-ink">Our Collection</h1>
-        <p className="mt-3 text-ink/55 max-w-2xl">Forty rare fragrances, photographed and hand-picked. Filter by family, price and availability to find your signature.</p>
+      <nav aria-label="Breadcrumb" className="text-[0.68rem] uppercase tracking-[0.2em] text-ink/45 mb-8">
+        <Link to="/" className="hover:text-gold-3 transition-colors">Home</Link>
+        <span className="mx-2 text-gold" aria-hidden="true">/</span>
+        <span className="text-ink/75">Our Collection</span>
+      </nav>
+
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p className="eyebrow mb-2">The boutique</p>
+          <h1 className="font-display text-4xl text-ink">Our Collection</h1>
+          <p className="mt-3 text-ink/55 max-w-2xl">Forty rare fragrances, photographed and hand-picked. Filter by family, price and availability to find your signature.</p>
+        </div>
+
+        {!loading && !error && products.length > 0 && (
+          <label className="flex items-center gap-3 text-sm">
+            <span className="text-ink/50 text-[0.68rem] uppercase tracking-[0.2em]">Sort</span>
+            <select
+              value={query.sort || ''}
+              onChange={handleSortChange}
+              className="bg-cream border border-ink/15 rounded-lg px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold-3"
+            >
+              <option value="">Featured</option>
+              <option value="price-asc">Price, low to high</option>
+              <option value="price-desc">Price, high to low</option>
+              <option value="name">Name, A&#8211;Z</option>
+              <option value="name-desc">Name, Z&#8211;A</option>
+              <option value="newest">Newest</option>
+            </select>
+          </label>
+        )}
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -67,7 +104,7 @@ export default function Products() {
             <input
               type="checkbox"
               checked={query.inStock || false}
-              onChange={(e) => setQuery((prev) => ({ ...prev, inStock: e.target.checked }))}
+              onChange={(e) => setQuery((prev) => ({ ...prev, inStock: e.target.checked, page: undefined }))}
               className="h-4 w-4 rounded border-ink/25"
             />
             In Stock Only
@@ -117,6 +154,7 @@ export default function Products() {
                   <ProductCard key={p._id} product={p} />
                 ))}
               </div>
+              <Pagination page={page} pages={pages} onPage={handlePageChange} />
             </>
           )}
         </main>

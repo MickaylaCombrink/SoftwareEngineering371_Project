@@ -2,12 +2,17 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { formatZAR } from '../utils/formatCurrency';
+import { getProductBrand } from '../utils/brand';
 import toast from 'react-hot-toast';
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
   const outOfStock = product.stock === 0;
+  const brand = getProductBrand(product.productName);
+
+  const hasSale = !outOfStock && product.oldPrice && product.oldPrice > product.price;
+  const discountPct = hasSale ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -43,25 +48,43 @@ export default function ProductCard({ product }) {
             </svg>
           </div>
         )}
-      </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-display text-lg text-ink group-hover:text-gold-3 transition-colors leading-snug truncate">
-          {product.productName}
-        </h3>
-        <p className="text-sm text-ink/55 mt-1.5 line-clamp-2 leading-relaxed">{product.description}</p>
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gold/15">
-          <span className="font-display text-xl font-semibold text-gold-3">{formatZAR(product.price)}</span>
+        <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
           {outOfStock ? (
-            <span className="chip bg-ink/5 text-ink/50 border border-ink/10">Out of Stock</span>
+            <span className="chip bg-ink/90 text-cream border border-ink">Out of Stock</span>
+          ) : hasSale ? (
+            <span className="chip bg-[#9b2c2c] text-cream border border-[#9b2c2c]">Save {discountPct}%</span>
+          ) : null}
+        </div>
+
+        <div className="absolute inset-x-3 bottom-3">
+          {outOfStock ? (
+            <span className="w-full flex justify-center py-2.5 rounded-full bg-cream/90 backdrop-blur-sm text-sm font-semibold text-ink/60">
+              Sold Out
+            </span>
           ) : (
             <button
               onClick={handleAddToCart}
-              className="px-4 py-1.5 rounded-full text-sm font-semibold text-ink bg-gold/15 hover:bg-gold hover:text-ink transition-colors border border-gold/30"
+              className="w-full py-2.5 rounded-full bg-ink text-cream text-sm font-semibold tracking-wide hover:bg-gold hover:text-ink transition-colors shadow-lux md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300"
             >
-              Add to Cart
+              Quick Add &middot; {formatZAR(product.price)}
             </button>
           )}
+        </div>
+      </div>
+
+      <div className="p-5 flex flex-col flex-1">
+        {brand && (
+          <p className="text-[0.68rem] uppercase tracking-[0.22em] text-ink/45 font-semibold">{brand}</p>
+        )}
+        <h3 className="font-display text-lg text-ink group-hover:text-gold-3 transition-colors leading-snug truncate">
+          {product.productName}
+        </h3>
+        <div className="flex items-center gap-2 mt-2">
+          {hasSale && (
+            <span className="text-sm text-ink/40 line-through">{formatZAR(product.oldPrice)}</span>
+          )}
+          <span className="font-display text-xl font-semibold text-gold-3">{formatZAR(product.price)}</span>
         </div>
       </div>
     </Link>

@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
+import PromoBar from './components/PromoBar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -25,6 +26,7 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <div className="min-h-screen bg-ivory flex flex-col">
+            <PromoBar />
             <Navbar />
             <main className="flex-1">
               <Routes>

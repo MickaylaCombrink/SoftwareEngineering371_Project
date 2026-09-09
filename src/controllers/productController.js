@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const { productRepository } = require('../repositories');
 
 // Only these fields may be set by a client; anything else in the body is dropped
-const WRITABLE = ['productName', 'description', 'price', 'stock', 'category', 'image'];
+const WRITABLE = ['productName', 'description', 'price', 'oldPrice', 'stock', 'category', 'image'];
 
 const pickWritable = (body = {}) =>
   WRITABLE.reduce((out, key) => {
@@ -17,6 +17,7 @@ const SORTS = {
   'price-asc': { price: 1 },
   'price-desc': { price: -1 },
   name: { productName: 1 },
+  'name-desc': { productName: -1 },
 };
 
 const DEFAULT_LIMIT = 50;

@@ -42,7 +42,7 @@ React Testing Library, rendering components in isolation with mocked contexts an
 - `useProducts` / `useOrders` hooks — API parameter mapping, error surfacing, loading state.
 
 ### 2.4 Backend Integration Testing (API)
-91 tests across 6 suites covering the full REST contract:
+92 tests across 6 suites covering the full REST contract:
 
 - **Auth** — registration, login, refresh-token rotation, logout, protected `/auth/me`,
   **change-password** (wrong current password → 401, short new password → 400, happy path
@@ -93,15 +93,15 @@ Interpretation: core business logic (controllers/services) is well covered (>86%
 
 | Area           | Stmts | Branch | Funcs | Lines |
 |----------------|-------|--------|-------|-------|
-| **All files**  | 80.56 | 63.63  | 73.38 | 82.39 |
-| components     | 77.41 | 70.45  | 60.00 | 78.33 |
+| **All files**  | 78.50 | 67.15  | 70.96 | 80.72 |
+| components     | 68.18 | 73.97  | 60.00 | 70.00 |
 | context        | 68.00 | 59.09  | 72.22 | 70.10 |
-| hooks          | 100   | 77.77  | 100   | 100   |
-| pages          | 85.31 | 62.06  | 75.94 | 88.59 |
-| utils          | 100   | 100    | 100   | 100   |
+| hooks          | 100   | 83.78  | 100   | 100   |
+| pages          | 83.46 | 62.90  | 72.28 | 87.17 |
+| utils          | 85.71 | 75.00  | 100   | 100   |
 | api (axios)    | 53.57 | 27.27  | 71.42 | 55.55 |
 
-Interpretation: every page and component is exercised through at least one positive path and the main negative branches (error/empty/unauthenticated). The `api/axios` interceptor's silent-refresh branch (lines 37–55) is only partially covered because the full 401→refresh→retry cycle requires an end-to-end server; the guard logic is still asserted via the token helpers test.
+Interpretation: every page and component is exercised through at least one positive path and the main negative branches (error/empty/unauthenticated). The new boutique features (announcement bar, sale badges, sort dropdown, numbered pagination) are covered by dedicated tests. The `api/axios` interceptor's silent-refresh branch (lines 37–55) is only partially covered because the full 401→refresh→retry cycle requires an end-to-end server; the guard logic is still asserted via the token helpers test.
 
 ## 5. Running the Suite
 
@@ -117,8 +117,8 @@ npm run test:coverage        # + HTML coverage report (client/coverage/)
 
 ## 6. Summary
 
-- **179 tests total** (91 backend + 88 frontend), all passing.
-- Backend line coverage **76.46%**, frontend line coverage **82.39%**.
+- **192 tests total** (92 backend + 100 frontend), all passing.
+- Backend line coverage **76.46%**, frontend line coverage **80.72%**.
 - Two production bugs (checkout 404, cart crash) caught before deployment, plus a flaky
   admin-dashboard loading test fixed during the coverage pass.
 - Additional deliverable: `PUT /api/auth/change-password` + Profile UI, covered end-to-end.
