@@ -15,10 +15,30 @@ const app = express();
 
 app.use(helmet());
 
-// CORS: locked to CLIENT_ORIGIN in production, open in development
+// CORS. CLIENT_ORIGIN accepts a comma-separated list, so a deployed site and
+// a preview URL can both be allowed without reopening the API to everyone
+const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+// Outside development an unset CLIENT_ORIGIN is a deployment mistake, not a
+// reason to fall back to '*' and accept requests from any site
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+  throw new Error('CLIENT_ORIGIN must be set when NODE_ENV=production.');
+}
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || '*',
+    origin(origin, callback) {
+      // No Origin header: same-origin, curl, Postman, server-to-server
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.length === 0) return callback(null, true); // development
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      return callback(new Error(`Origin ${origin} is not allowed by CORS.`));
+    },
     credentials: true,
   })
 );

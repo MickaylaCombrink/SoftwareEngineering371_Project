@@ -4,6 +4,7 @@ import { ProtectedRoute } from './routes/protectedRoute';
 import { AdminRoute } from './routes/AdminRoute';
 import { Login } from './screens/login';
 import { Register } from './screens/register';
+import { AppRoutes } from './routes/AppRoutes';
 
 export default function App() {
   return (
@@ -24,4 +25,8 @@ export default function App() {
       </AuthProvider>
     </BrowserRouter>
   );
+
+
+export default function App() {
+  return <AppRoutes />;
 }
