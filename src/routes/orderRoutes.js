@@ -11,6 +11,9 @@ router
   .post(orderController.createOrder)
   .get(orderController.getMyOrders);
 
+// Must be registered before /:id so "all" is not treated as an order id
+router.get('/all', restrictTo('admin'), orderController.getAllOrders);
+
 router.get('/:id', orderController.getOrder);
 router.put('/:id/status', restrictTo('admin'), orderController.updateOrderStatus);
 

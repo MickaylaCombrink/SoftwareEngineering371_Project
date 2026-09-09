@@ -17,6 +17,16 @@ exports.getMyOrders = catchAsync(async (req, res, next) => {
   });
 });
 
+// GET /api/orders/all - admin only: full fulfilment queue
+exports.getAllOrders = catchAsync(async (req, res, next) => {
+  const orders = await orderService.getAllOrders();
+  res.status(200).json({
+    status: 'success',
+    results: orders.length,
+    data: { orders },
+  });
+});
+
 // GET /api/orders/:id - owner or admin only
 exports.getOrder = catchAsync(async (req, res, next) => {
   const isAdmin = req.user.role === 'admin';

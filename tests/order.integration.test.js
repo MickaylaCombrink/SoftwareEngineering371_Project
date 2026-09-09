@@ -225,4 +225,43 @@ describe('Orders', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.data.order.orderStatus).toBe('Shipping');
   });
+
+  test('GET /api/orders/all returns every order to an admin, with the buyer populated', async () => {
+    const product = await createProduct();
+    await seedCartFor(customerToken, product, 1);
+    const mine = await request(app).post('/api/orders').set('Authorization', `Bearer ${customerToken}`);
+    const myOrderId = mine.body.data.order._id;
+
+    await seedCartFor(adminToken, product, 1);
+    await request(app).post('/api/orders').set('Authorization', `Bearer ${adminToken}`);
+
+    // A second customer's order must also be visible to the admin
+    const customer2 = await request(app).post('/api/auth/register').send({
+      firstName: 'Another',
+      lastName: 'Buyer',
+      email: 'buyer2@example.com',
+      password: 'strongpass123',
+    });
+    await seedCartFor(customer2.body.token, product, 1);
+    await request(app).post('/api/orders').set('Authorization', `Bearer ${customer2.body.token}`);
+
+    const res = await request(app)
+      .get('/api/orders/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.results).toBe(3);
+    const ids = res.body.data.orders.map((o) => o._id);
+    expect(ids).toContain(myOrderId);
+    // The buyer is populated so the admin dashboard can show customer names
+    const withBuyer = res.body.data.orders.find((o) => o._id === myOrderId);
+    expect(withBuyer.userId.firstName).toBe('Tanya');
+  });
+
+  test('a customer cannot access /api/orders/all -> 403', async () => {
+    const res = await request(app)
+      .get('/api/orders/all')
+      .set('Authorization', `Bearer ${customerToken}`);
+    expect(res.statusCode).toBe(403);
+  });
 });

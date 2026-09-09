@@ -15,5 +15,6 @@ router.post('/refresh', authController.refresh);
 router.post('/logout', authController.logout);
 
 router.get('/me', protect, authController.getMe);
+router.put('/change-password', protect, authController.changePassword);
 
 module.exports = router;

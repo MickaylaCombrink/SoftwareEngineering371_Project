@@ -82,6 +82,12 @@ class OrderService {
     return orderRepository.findByUser(userId);
   }
 
+  // Admin fulfilment queue: every order, newest first
+  async getAllOrders() {
+    const Order = require('../models/Order');
+    return Order.find().sort({ createdAt: -1 }).populate('userId', 'firstName lastName email');
+  }
+
   async getOrder(orderId, userId, { isAdmin = false } = {}) {
     const order = await orderRepository.findByIdForUser(orderId, userId, { isAdmin });
     if (!order) {

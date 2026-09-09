@@ -9,6 +9,11 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Price is required.'],
       min: [0, 'Price cannot be negative.'],
     },
+    oldPrice: {
+      type: Number,
+      default: null,
+      min: [0, 'Old price cannot be negative.'],
+    },
     stock: {
       type: Number,
       required: [true, 'Stock is required.'],

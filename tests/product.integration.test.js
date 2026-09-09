@@ -147,6 +147,15 @@ describe('GET /api/products - sorting and pagination', () => {
     expect(names(res)[0]).toBe('Premium Laptop');
   });
 
+  test('sort=name orders alphabetically A-Z and name-desc reverses it', async () => {
+    const asc = await request(app).get('/api/products?sort=name');
+    const desc = await request(app).get('/api/products?sort=name-desc');
+
+    expect(names(asc)[0]).toBe('Basic Phone');
+    expect(names(asc)).toEqual([...names(asc)].sort());
+    expect(names(desc)[0]).toBe('Premium Laptop');
+  });
+
   test('limit and page split the results', async () => {
     const first = await request(app).get('/api/products?sort=price-asc&limit=2&page=1');
     const second = await request(app).get('/api/products?sort=price-asc&limit=2&page=2');
@@ -259,12 +268,14 @@ describe('Admin product management', () => {
       productName: 'Newcomer',
       description: 'Fresh stock',
       price: 42,
+      oldPrice: 60,
       stock: 3,
       category: laptops._id.toString(),
     });
 
     expect(res.statusCode).toBe(201);
     expect(res.body.data.product.productName).toBe('Newcomer');
+    expect(res.body.data.product.oldPrice).toBe(60);
     expect(await Product.countDocuments()).toBe(5);
   });
 
