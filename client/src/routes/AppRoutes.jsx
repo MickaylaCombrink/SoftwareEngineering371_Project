@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PageLayout } from '../layout/PageLayout';
 import { EmptyState } from '../components/EmptyState';
+import { ProductCatalogue } from '../pages/ProductCatalogue';
+import { ProductDetail } from '../pages/ProductDetail';
+import { CartPage } from '../pages/CartPage';
+import { OrderHistory } from '../pages/OrderHistory';
 
-// Placeholder until the owning person replaces it. Keeping a route registered
-// for every path the app can navigate to means a redirect never lands on a
-// blank screen - the API client sends an unrecoverable session to /login
+// Person 2 will replace these placeholders with real auth screens once built
 function Placeholder({ owner, screen }) {
   return <EmptyState message={`${screen} - to be built by ${owner}.`} />;
 }
@@ -14,10 +16,10 @@ export function AppRoutes() {
     <BrowserRouter>
       <PageLayout>
         <Routes>
-          <Route path="/" element={<Placeholder owner="Person 3" screen="Product catalogue" />} />
-          <Route path="/products/:id" element={<Placeholder owner="Person 3" screen="Product detail" />} />
-          <Route path="/cart" element={<Placeholder owner="Person 3" screen="Cart" />} />
-          <Route path="/orders" element={<Placeholder owner="Person 3" screen="Order history" />} />
+          <Route path="/" element={<ProductCatalogue />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/orders" element={<OrderHistory />} />
 
           <Route path="/login" element={<Placeholder owner="Person 2" screen="Login" />} />
           <Route path="/register" element={<Placeholder owner="Person 2" screen="Register" />} />
