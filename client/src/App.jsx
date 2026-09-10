@@ -1,5 +1,17 @@
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import { AppRoutes } from './routes/AppRoutes';
 
+// Router outermost so providers can navigate; auth wraps cart
 export default function App() {
-  return <AppRoutes />;
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <AppRoutes />
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }

@@ -1,8 +1,7 @@
 import { api } from './client';
 import { tokenStorage } from './tokenStorage';
 
-// Paths may be written with or without the /api prefix; the client normalises
-// them. They are spelled with it here to match the backend's route table.
+// Spelled with the /api prefix to match the backend's route table
 
 export const AuthAPI = {
   register: async (payload) => {
@@ -17,8 +16,7 @@ export const AuthAPI = {
     return body.data.user;
   },
 
-  // Revokes the refresh token server-side, then clears local state whatever
-  // the response was: a failed logout must not leave the user seemingly signed in
+  // Clears local state even if the server call fails
   logout: async () => {
     const refreshToken = tokenStorage.getRefresh();
     try {
@@ -31,8 +29,7 @@ export const AuthAPI = {
   getMe: () => api.get('/api/auth/me').then((data) => data.user),
 };
 
-// Turns { category, minPrice, maxPrice, inStock, q, sort, page, limit } into a
-// query string, dropping anything empty
+// Builds the catalogue query string, dropping anything empty
 function queryString(params = {}) {
   const search = new URLSearchParams();
 
@@ -47,8 +44,7 @@ function queryString(params = {}) {
 }
 
 export const ProductsAPI = {
-  // Resolves to { products, results, total, page, pages } - the pagination
-  // fields live outside `data`, so this one reads the full envelope
+  // Pagination fields sit outside `data`, so read the full envelope
   list: async (params) => {
     const body = await api.rawGet(`/api/products${queryString(params)}`);
     return {

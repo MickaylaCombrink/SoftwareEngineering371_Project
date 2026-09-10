@@ -1,32 +1,38 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { PageLayout } from '../layout/PageLayout';
 import { EmptyState } from '../components/EmptyState';
-
-// Placeholder until the owning person replaces it. Keeping a route registered
-// for every path the app can navigate to means a redirect never lands on a
-// blank screen - the API client sends an unrecoverable session to /login
-function Placeholder({ owner, screen }) {
-  return <EmptyState message={`${screen} - to be built by ${owner}.`} />;
-}
+import { ProductCatalogue } from '../pages/ProductCatalogue';
+import { ProductDetail } from '../pages/ProductDetail';
+import { CartPage } from '../pages/CartPage';
+import { OrderHistory } from '../pages/OrderHistory';
+import { Login } from '../pages/Login';
+import { Register } from '../pages/Register';
+import { ProtectedRoute } from './ProtectedRoute';
+import { AdminRoute } from './AdminRoute';
 
 export function AppRoutes() {
   return (
-    <BrowserRouter>
-      <PageLayout>
-        <Routes>
-          <Route path="/" element={<Placeholder owner="Person 3" screen="Product catalogue" />} />
-          <Route path="/products/:id" element={<Placeholder owner="Person 3" screen="Product detail" />} />
-          <Route path="/cart" element={<Placeholder owner="Person 3" screen="Cart" />} />
-          <Route path="/orders" element={<Placeholder owner="Person 3" screen="Order history" />} />
+    <PageLayout>
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<ProductCatalogue />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-          <Route path="/login" element={<Placeholder owner="Person 2" screen="Login" />} />
-          <Route path="/register" element={<Placeholder owner="Person 2" screen="Register" />} />
+        {/* Signed in */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/orders" element={<OrderHistory />} />
+        </Route>
 
-          <Route path="/admin" element={<Placeholder owner="Person 4" screen="Admin dashboard" />} />
+        {/* Admin only — screens still to be built by Person 4 */}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<EmptyState message="Admin dashboard - to be built by Person 4." />} />
+        </Route>
 
-          <Route path="*" element={<EmptyState message="Page not found." />} />
-        </Routes>
-      </PageLayout>
-    </BrowserRouter>
+        <Route path="*" element={<EmptyState message="Page not found." />} />
+      </Routes>
+    </PageLayout>
   );
 }

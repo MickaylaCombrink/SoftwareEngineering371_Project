@@ -20,7 +20,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(err);
   }
 
-  // Re-read the user rather than trusting the payload: the account may have been deleted or demoted
+  // Re-read the user: the account may have been deleted or demoted
   const user = await userRepository.findById(decoded.id);
   if (!user) {
     return next(AppError.unauthorized('The user belonging to this token no longer exists.'));

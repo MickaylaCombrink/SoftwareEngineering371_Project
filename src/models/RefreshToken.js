@@ -1,8 +1,7 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 
-// Refresh tokens are stored as a SHA-256 hash, never in plaintext, so a
-// leaked database dump cannot be replayed against the API
+// Stored as a SHA-256 hash, never in plaintext
 const refreshTokenSchema = new mongoose.Schema(
   {
     tokenHash: { type: String, required: true, unique: true },
@@ -13,8 +12,7 @@ const refreshTokenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Mongo removes each document once expiresAt passes, so the collection
-// cannot grow without bound the way the old in-memory Set did
+// TTL index: Mongo removes each row once expiresAt passes
 refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Revoking every session for one user, and listing a user's sessions

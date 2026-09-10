@@ -1,8 +1,4 @@
-// Fallback copy for each status code your team agreed to handle.
-// The server's own message always wins when present (see client.js) —
-// this only fires when the server didn't send one, or the body failed to parse.
-// In practice this rarely fires: every error path in the backend (AppError,
-// the global handler, and both rate limiters) already sends a real message.
+// Fallback copy: only used when the server sent no message of its own
 export const STATUS_MESSAGES = {
   400: 'That request was malformed.',
   401: 'Your session has expired. Please log in again.',

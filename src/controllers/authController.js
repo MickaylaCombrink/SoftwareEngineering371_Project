@@ -13,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 8;
 
 async function findByCredentials(email, password) {
   const user = await userRepository.findByEmailWithPassword(email);
-  // Same result whether or not the email exists, so it cannot be used to enumerate accounts
+  // Same result either way, so emails cannot be enumerated
   if (!user) return null;
   const isMatch = await bcrypt.compare(password, user.password);
   return isMatch ? user : null;
@@ -36,13 +36,8 @@ function publicUser(user) {
   return rest;
 }
 
-// Signs a refresh token and records it, using the token's own exp claim as
-// the row's expiry so the two can never disagree.
-//
-// The jti matters: a JWT is a pure function of its payload, and iat has only
-// second resolution, so two tokens signed for the same user in the same second
-// would be byte-identical and collide on the tokenHash unique index. A random
-// jti makes every issued token distinct.
+// Records the token, expiring the row on the JWT's own exp claim.
+// The random jti keeps two tokens signed in the same second distinct.
 async function issueRefreshToken(user) {
   const refreshToken = signRefreshToken({
     id: user.id,
@@ -117,8 +112,7 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.refresh = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
-  // Checked against the stored allow-list as well as the signature, so a
-  // revoked token is rejected even while it is still cryptographically valid
+  // Allow-list check as well as signature, so revoked tokens are rejected
   if (!refreshToken || !(await refreshTokenRepository.isActive(refreshToken))) {
     return next(AppError.unauthorized('Invalid or expired refresh token.'));
   }
@@ -135,8 +129,7 @@ exports.refresh = catchAsync(async (req, res, next) => {
     return next(AppError.unauthorized('The user belonging to this token no longer exists.'));
   }
 
-  // Rotation: the presented token is revoked before the replacement is issued,
-  // so it can never be used twice
+  // Rotation: revoke before reissuing, so a token is never usable twice
   await refreshTokenRepository.revoke(refreshToken);
 
   const accessToken = signAccessToken({ id: user.id, role: user.role });
@@ -153,8 +146,7 @@ exports.refresh = catchAsync(async (req, res, next) => {
 exports.logout = catchAsync(async (req, res, next) => {
   const { refreshToken } = req.body;
 
-  // Always 200: an unknown or already-revoked token is not an error, and
-  // reporting the difference would leak which tokens exist
+  // Always 200: reporting unknown tokens would leak which ones exist
   if (refreshToken) {
     await refreshTokenRepository.revoke(refreshToken);
   }

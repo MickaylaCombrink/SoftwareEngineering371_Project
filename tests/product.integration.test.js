@@ -1,5 +1,4 @@
-// Integration tests for the products API: catalogue filtering, sorting,
-// pagination, and the admin-only write routes.
+// Products API: filtering, sorting, pagination and admin-only writes.
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');

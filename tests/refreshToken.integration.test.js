@@ -1,5 +1,4 @@
-// Refresh tokens are persisted in a collection rather than in memory, so a
-// server restart no longer invalidates every session.
+// Refresh tokens are persisted, so a restart does not end every session.
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -62,11 +61,7 @@ describe('Refresh token persistence', () => {
   });
 
   test('a token this process never issued is still accepted', async () => {
-    // The real question behind "does it survive a restart" is whether the
-    // allow-list lives in the database rather than in this process's memory.
-    // So: mint a token and record it directly, exactly as a previous run of
-    // the server would have left it, then present it to a server that has no
-    // memory of issuing it.
+    // Record a token directly, as a previous server run would have left it
     await register();
     const user = await User.findOne({ email: credentials.email });
 
@@ -133,8 +128,7 @@ describe('Rotation and revocation', () => {
   });
 
   test('a signed but unrecorded token is rejected', async () => {
-    // Cryptographically valid, but never issued through the API, so it is
-    // absent from the allow-list
+    // Valid signature, but absent from the allow-list
     const { signRefreshToken } = require('../src/config/jwt');
     const forged = signRefreshToken({ id: new mongoose.Types.ObjectId().toString(), role: 'admin' });
 
@@ -144,8 +138,7 @@ describe('Rotation and revocation', () => {
   });
 
   test('revokeAllForUser kills every session for that user', async () => {
-    // Two sessions for one user: registering signs them in, logging in again
-    // is a second device
+    // Two sessions for one user: register, then log in again
     const first = await register();
     const second = await request(app)
       .post('/api/auth/login')

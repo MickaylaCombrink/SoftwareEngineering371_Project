@@ -15,15 +15,13 @@ const app = express();
 
 app.use(helmet());
 
-// CORS. CLIENT_ORIGIN accepts a comma-separated list, so a deployed site and
-// a preview URL can both be allowed without reopening the API to everyone
+// CORS: CLIENT_ORIGIN is a comma-separated allow-list
 const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-// Outside development an unset CLIENT_ORIGIN is a deployment mistake, not a
-// reason to fall back to '*' and accept requests from any site
+// In production an unset CLIENT_ORIGIN is a deployment mistake, not a '*' fallback
 if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
   throw new Error('CLIENT_ORIGIN must be set when NODE_ENV=production.');
 }

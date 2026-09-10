@@ -1,5 +1,4 @@
-// Categories API: read routes are public, writes are admin-only and go
-// through the repository layer with a field whitelist.
+// Categories API: public reads, admin-only writes.
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');

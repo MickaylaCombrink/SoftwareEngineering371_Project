@@ -26,8 +26,7 @@ class RefreshTokenRepository extends BaseRepository {
     return Boolean(found);
   }
 
-  // Marked revoked rather than deleted, so a replayed token is distinguishable
-  // from one that never existed
+  // Marked revoked rather than deleted, to distinguish replay from forgery
   async revoke(token) {
     return this.model
       .findOneAndUpdate(

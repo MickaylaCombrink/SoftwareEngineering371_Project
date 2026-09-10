@@ -1,9 +1,4 @@
-// `access` maps to the `token` field the API returns.
-// `refresh` maps to the `refreshToken` field, and gets overwritten on every
-// login/register/refresh call because the backend rotates it — the old
-// refresh token is deleted from the server's allow-list the instant a new
-// one is issued, so failing to overwrite it here means the *next* refresh
-// attempt will 401 with "Invalid or expired refresh token."
+// The refresh token rotates on every call, so both are always overwritten
 
 const ACCESS_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
