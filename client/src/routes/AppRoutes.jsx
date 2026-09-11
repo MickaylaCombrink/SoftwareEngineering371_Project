@@ -9,6 +9,7 @@ import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
+import  AdminPanel  from '../pages/AdminPanel';
 
 export function AppRoutes() {
   return (
