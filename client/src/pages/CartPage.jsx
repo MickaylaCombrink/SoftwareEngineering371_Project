@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Bottle } from '../components/Bottle';
+import { ErrorBanner } from '../components/ErrorBanner';
 import { formatPrice, deliveryFee, FREE_DELIVERY_THRESHOLD } from '../utils/format';
 
 export function CartPage() {
@@ -11,7 +11,9 @@ export function CartPage() {
 
   const shipping = deliveryFee(subtotal);
   const total = subtotal + shipping;
-  const awayFromFree = FREE_DELIVERY_THRESHOLD - subtotal;
+  const qualifiesForFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
+
+  const progressPercent = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
 
   const handleQuantityChange = async (productId, newQty) => {
     if (newQty < 1) return;
@@ -40,141 +42,155 @@ export function CartPage() {
 
   if (loading) {
     return (
-      <div className="container-xxl py-5 d-flex justify-content-center">
-        <div className="spinner-border spinner-gold" role="status">
-          <span className="visually-hidden">Loading your cart…</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (cart.length === 0) {
-    return (
-      <div className="container-xxl py-5 text-center">
-        <h1 className="display-page mb-3">Your cart is empty</h1>
-        <p className="text-muted-gold mb-4">Nothing here yet — go and find something you like.</p>
-        <Link to="/products" className="btn btn-primary">
-          Shop the collection
-        </Link>
+      <div className="cart-dark">
+        <div className="spinner" role="status" aria-label="Loading your cart…" />
       </div>
     );
   }
 
   return (
-    <div className="container-xxl py-4 py-lg-5">
-      <h1 className="display-page mb-4">Your cart</h1>
-
-      {error && (
-        <div className="alert alert-error" role="alert">
-          {error}
+    <div className="cart-dark">
+      <div className="cart-dark__left">
+        <div className="cart-dark__header">
+          <h1 className="cart-dark__title">Your cart</h1>
+          <span className="cart-dark__count">
+            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+          </span>
         </div>
-      )}
 
-      <div className="row g-4 g-lg-5">
-        {/* Line items */}
-        <div className="col-12 col-lg-7">
-          <ul className="list-unstyled mb-0">
+        {itemCount > 0 &&
+          (qualifiesForFreeDelivery ? (
+            <p className="cart-dark__delivery-msg cart-dark__delivery-msg--success">
+              Your order qualifies for free nationwide delivery
+            </p>
+          ) : (
+            <p className="cart-dark__delivery-msg">
+              Add {formatPrice(FREE_DELIVERY_THRESHOLD - subtotal)} more for free nationwide delivery
+            </p>
+          ))}
+
+        {itemCount > 0 && (
+          <div className="cart-dark__progress-wrap">
+            <div className="cart-dark__progress-track">
+              <div
+                className="cart-dark__progress-fill"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <div className="cart-dark__progress-labels">
+              <span>{formatPrice(subtotal)}</span>
+              <span>{formatPrice(FREE_DELIVERY_THRESHOLD)}</span>
+            </div>
+          </div>
+        )}
+
+        <ErrorBanner message={error} />
+
+        {cart.length === 0 ? (
+          <div className="cart-dark__empty">
+            <p>Your cart is empty</p>
+            <Link to="/products" className="cart-dark__continue-link">
+              Continue shopping
+            </Link>
+          </div>
+        ) : (
+          <div className="cart-dark__items">
             {cart.map((item) => (
-              <li
-                className="d-flex flex-wrap align-items-center gap-3 py-3 border-bottom"
-                style={{ borderColor: 'var(--c-border)' }}
-                key={item.productId}
-              >
-                <Link to={`/products/${item.productId}`} className="bottle bottle--sm">
-                  <Bottle seed={item.name} size={38} />
-                </Link>
+              <div key={item.productId} className="cart-dark-item">
+                <div className="cart-dark-item__image-placeholder" />
 
-                <div className="flex-grow-1" style={{ minWidth: '9rem' }}>
-                  <Link
-                    to={`/products/${item.productId}`}
-                    className="d-block text-decoration-none"
-                    style={{ color: 'var(--c-text)' }}
-                  >
+                <div className="cart-dark-item__details">
+                  <Link to={`/products/${item.productId}`} className="cart-dark-item__name">
                     {item.name}
                   </Link>
-                  <span className="d-block text-muted-gold small mt-1">
-                    {formatPrice(item.unitPrice)} each
-                  </span>
-                </div>
+                  <p className="cart-dark-item__variant">{formatPrice(item.unitPrice)} each</p>
 
-                <div className="qty-group">
-                  <button
-                    type="button"
-                    onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
-                    disabled={item.quantity <= 1 || busyId === item.productId}
-                    aria-label={`Decrease quantity of ${item.name}`}
-                  >
-                    −
-                  </button>
-                  <span>{item.quantity}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                    disabled={busyId === item.productId}
-                    aria-label={`Increase quantity of ${item.name}`}
-                  >
-                    +
-                  </button>
-                </div>
+                  <div className="cart-dark-item__controls">
+                    <div className="cart-dark-item__qty">
+                      <button
+                        className="cart-dark-item__qty-btn"
+                        onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                        disabled={item.quantity <= 1 || busyId === item.productId}
+                        aria-label={`Decrease quantity of ${item.name}`}
+                      >
+                        −
+                      </button>
+                      <span className="cart-dark-item__qty-value">{item.quantity}</span>
+                      <button
+                        className="cart-dark-item__qty-btn"
+                        onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                        disabled={busyId === item.productId}
+                        aria-label={`Increase quantity of ${item.name}`}
+                      >
+                        +
+                      </button>
+                    </div>
 
-                <span className="serif fs-4" style={{ minWidth: '6rem', textAlign: 'right' }}>
-                  {formatPrice(item.unitPrice * item.quantity)}
-                </span>
+                    <span className="cart-dark-item__price">
+                      {formatPrice(item.unitPrice * item.quantity)}
+                    </span>
+                  </div>
+                </div>
 
                 <button
-                  type="button"
-                  className="btn btn-link-gold btn-sm"
+                  className="cart-dark-item__remove"
                   onClick={() => handleRemove(item.productId)}
                   disabled={busyId === item.productId}
                 >
                   Remove
                 </button>
-              </li>
+              </div>
             ))}
-          </ul>
-
-          <Link to="/products" className="btn btn-link-gold btn-sm ps-0 mt-3">
-            ← Continue shopping
-          </Link>
-        </div>
-
-        {/* Summary */}
-        <div className="col-12 col-lg-5">
-          <div className="panel p-3 p-md-4" style={{ position: 'sticky', top: '1.5rem' }}>
-            <h2 className="serif fs-3 mb-4">Summary</h2>
-
-            <dl className="mb-4">
-              <div className="d-flex justify-content-between py-2">
-                <dt className="fw-normal text-muted-gold">Items ({itemCount})</dt>
-                <dd className="mb-0">{formatPrice(subtotal)}</dd>
-              </div>
-              <div className="d-flex justify-content-between py-2">
-                <dt className="fw-normal text-muted-gold">Delivery</dt>
-                <dd className={`mb-0${shipping === 0 ? ' text-free' : ''}`}>
-                  {shipping === 0 ? 'Free' : formatPrice(shipping)}
-                </dd>
-              </div>
-              <div
-                className="d-flex justify-content-between align-items-baseline border-top pt-3 mt-2"
-                style={{ borderColor: 'var(--c-border)' }}
-              >
-                <dt className="serif fs-4 fw-normal">Total</dt>
-                <dd className="serif fs-3 mb-0">{formatPrice(total)}</dd>
-              </div>
-            </dl>
-
-            {awayFromFree > 0 && (
-              <p className="form-text mb-3">
-                Add {formatPrice(awayFromFree)} more for free delivery.
-              </p>
-            )}
-
-            {/* Goes to the checkout page — delivery details and payment are
-                collected there, so an order is never placed straight from here */}
-            <Link to="/checkout" className="btn btn-primary w-100">
-              Proceed to checkout
-            </Link>
           </div>
+        )}
+
+        {cart.length > 0 && (
+          <Link to="/products" className="cart-dark__continue-link">
+            Continue shopping
+          </Link>
+        )}
+      </div>
+
+      <div className="cart-dark__right">
+        <div className="cart-dark__summary">
+          <h2 className="cart-dark__summary-title">Order summary</h2>
+
+          <div className="cart-dark__summary-table">
+            <div className="cart-dark__summary-header">
+              <span>Product</span>
+              <span>Quantity</span>
+              <span>Total</span>
+            </div>
+            {cart.map((item) => (
+              <div key={item.productId} className="cart-dark__summary-row">
+                <span className="cart-dark__summary-product">{item.name}</span>
+                <span>{item.quantity}</span>
+                <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="cart-dark__summary-totals">
+            <div className="cart-dark__summary-line">
+              <span>Subtotal</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div className="cart-dark__summary-line">
+              <span>Delivery</span>
+              <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+            </div>
+            <div className="cart-dark__summary-divider" />
+            <div className="cart-dark__summary-line cart-dark__summary-line--total">
+              <span>Total</span>
+              <span>{formatPrice(total)}</span>
+            </div>
+            <p className="cart-dark__summary-vat">Includes VAT at 15%</p>
+          </div>
+
+          <Link to="/checkout" className="cart-dark__checkout-btn">
+            Proceed to checkout
+          </Link>
+          <p className="cart-dark__secure">Secure checkout</p>
         </div>
       </div>
     </div>
