@@ -14,6 +14,7 @@ import { Register } from '../pages/Register';
 import { NotFound } from '../pages/NotFound';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
+import  AdminPanel  from '../pages/AdminPanel';
 
 export function AppRoutes() {
   return (

@@ -1,3 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cormorantGaramond: "Cormorant Garamond", serif;
+  --font-jost: "Jost", sans-serif;
+}
 /* Page-specific styles for the catalogue, which still uses the team's
    original BEM classes. Everything else is Bootstrap plus styles/theme.css.
 
