@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: '/products', label: 'Shop All' },
   { to: '/products?sort=-createdAt', label: 'New In' },
   { to: '/orders', label: 'My Orders' },
+  { to: '/contact', label: 'Contact' },
 ];
 
 export function Header() {

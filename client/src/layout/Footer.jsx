@@ -14,7 +14,7 @@ const COLUMNS = [
     links: [
       { to: '/products', label: 'Delivery' },
       { to: '/products', label: 'Returns' },
-      { to: '/products', label: 'Contact' },
+      { to: '/contact', label: 'Contact' },
     ],
   },
   {
