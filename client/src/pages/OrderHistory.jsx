@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { OrdersAPI } from '../api/endpoints';
-import { Spinner } from '../components/Spinner';
-import { ErrorBanner } from '../components/ErrorBanner';
-import { EmptyState } from '../components/EmptyState';
+import { Bottle } from '../components/Bottle';
+import { formatPrice, formatDate, orderReference } from '../utils/format';
+
+const STATUS_CLASS = {
+  Pending: 'badge',
+  Shipping: 'badge',
+  Delivered: 'badge badge--ok',
+};
 
 export function OrderHistory() {
   const [orders, setOrders] = useState([]);
@@ -11,50 +16,108 @@ export function OrderHistory() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
+
     OrdersAPI.list()
-      .then(setOrders)
-      .catch((err) => setError(err.message || 'Failed to load orders.'))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setOrders(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message || 'Could not load your orders.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  if (loading) return <Spinner />;
-  if (error) return <ErrorBanner message={error} />;
-  if (orders.length === 0) return <EmptyState message="You have no orders yet." />;
+  if (loading) {
+    return (
+      <div className="container-xxl py-5 d-flex justify-content-center">
+        <div className="spinner-border spinner-gold" role="status">
+          <span className="visually-hidden">Loading your orders…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-xxl py-5">
+        <div className="alert alert-error" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="container-xxl py-5 text-center">
+        <h1 className="display-page mb-3">No orders yet</h1>
+        <p className="text-muted-gold mb-4">Your completed orders will appear here.</p>
+        <Link to="/products" className="btn btn-primary">
+          Shop the collection
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="orders-page">
-      <h1 className="orders-page__title">Order History</h1>
-      <div className="orders-page__list">
+    <div className="container-xxl py-4 py-lg-5">
+      <h1 className="display-page mb-4">Your orders</h1>
+
+      <div className="d-flex flex-column gap-4">
         {orders.map((order) => (
-          <div key={order._id} className="order-card">
-            <div className="order-card__header">
-              <span className="order-card__id">Order #{order._id.slice(-6).toUpperCase()}</span>
-              <span className={`order-card__status order-card__status--${order.orderStatus.toLowerCase()}`}>
+          <div className="panel" key={order._id}>
+            <div
+              className="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 p-md-4 border-bottom surface-alt"
+              style={{ borderColor: 'var(--c-border)' }}
+            >
+              <div>
+                <div className="meta mb-1">Order</div>
+                <div>{orderReference(order._id)}</div>
+              </div>
+              <div>
+                <div className="meta mb-1">Placed</div>
+                <div>{formatDate(order.createdAt)}</div>
+              </div>
+              <span className={STATUS_CLASS[order.orderStatus] || 'badge'}>
                 {order.orderStatus}
               </span>
             </div>
-            <p className="order-card__date">
-              {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              })}
-            </p>
-            <div className="order-card__items">
-              {order.items.map((item, idx) => (
-                <div key={idx} className="order-card__item">
-                  <Link to={`/products/${item.productId}`} className="order-card__item-name">
+
+            <ul className="list-unstyled mb-0 p-3 p-md-4">
+              {order.items.map((item) => (
+                <li className="d-flex align-items-center gap-3 py-2" key={item.productId}>
+                  <span className="bottle bottle--sm">
+                    <Bottle seed={item.name} size={30} />
+                  </span>
+                  {/* Route param is :id, so the link must not say :productId */}
+                  <Link
+                    to={`/products/${item.productId}`}
+                    className="flex-grow-1 text-decoration-none"
+                    style={{ color: 'var(--c-text)' }}
+                  >
                     {item.name}
                   </Link>
-                  <span className="order-card__item-qty">x{item.quantity}</span>
-                  <span className="order-card__item-price">${(item.unitPrice * item.quantity).toFixed(2)}</span>
-                </div>
+                  <span className="text-muted-gold small">×{item.quantity}</span>
+                  <span style={{ minWidth: '6rem', textAlign: 'right' }}>
+                    {formatPrice(item.unitPrice * item.quantity)}
+                  </span>
+                </li>
               ))}
-            </div>
-            <div className="order-card__footer">
-              <span className="order-card__payment">Payment: {order.paymentStatus}</span>
-              <span className="order-card__total">${order.totalPrice.toFixed(2)}</span>
+            </ul>
+
+            <div
+              className="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 p-md-4 border-top"
+              style={{ borderColor: 'var(--c-border)' }}
+            >
+              <span className="meta mb-0">Payment: {order.paymentStatus}</span>
+              <span className="serif fs-4">{formatPrice(order.totalPrice)}</span>
             </div>
           </div>
         ))}
