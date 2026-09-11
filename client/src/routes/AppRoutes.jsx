@@ -8,6 +8,7 @@ import { ProductDetail } from '../pages/ProductDetail';
 import { CartPage } from '../pages/CartPage';
 import { Checkout } from '../pages/Checkout';
 import { OrderConfirmation } from '../pages/OrderConfirmation';
+import { ContactPage } from '../pages/ContactPage';
 import { OrderHistory } from '../pages/OrderHistory';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
@@ -26,6 +27,7 @@ export function AppRoutes() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/contact" element={<ContactPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<CartPage />} />
