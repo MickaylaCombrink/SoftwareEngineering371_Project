@@ -26,7 +26,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
+/*
 export default function App() {
   return <AppRoutes />;
-}
+}*/

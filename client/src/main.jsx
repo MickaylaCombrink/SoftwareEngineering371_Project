@@ -1,6 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
+
+// Bootstrap first, then our token and theme layers override it.
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/tokens.css';
+import './styles/theme.css';
 import './index.css';
 
 import App from './App.jsx';
