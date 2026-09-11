@@ -1,0 +1,510 @@
+/* Scentigue theme layer — maps our design tokens onto Bootstrap's own CSS
+   variables so Bootstrap's components come out in the prototype's palette
+   instead of the default blue. Loaded after bootstrap.min.css. */
+
+:root,
+[data-bs-theme='dark'] {
+  --bs-body-bg: var(--c-bg);
+  --bs-body-color: var(--c-text);
+  --bs-body-font-family: var(--font-sans);
+  --bs-body-font-size: var(--fs-base);
+  --bs-body-font-weight: 300;
+  --bs-body-line-height: 1.6;
+
+  --bs-emphasis-color: var(--c-text);
+  --bs-secondary-color: var(--c-text-muted);
+  --bs-tertiary-color: var(--c-text-dim);
+
+  --bs-border-color: var(--c-border);
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+
+  --bs-primary: var(--c-accent);
+  --bs-primary-rgb: 201, 151, 63;
+  --bs-link-color: var(--c-accent);
+  --bs-link-hover-color: var(--c-accent-hover);
+  --bs-link-color-rgb: 201, 151, 63;
+
+  --bs-heading-color: var(--c-text);
+  --bs-focus-ring-color: rgba(201, 151, 63, 0.4);
+}
+
+/* Page gutter. Bootstrap's default container padding is 0.75rem, which is
+   narrower than the negative margin a `g-5` row applies — so such a row
+   spills past the container and puts horizontal scroll on the page. Widening
+   the container gutter fixes that and matches the prototype's side padding. */
+.container-xxl {
+  --bs-gutter-x: 3rem;
+}
+
+@media (min-width: 62em) {
+  .container-xxl {
+    --bs-gutter-x: 8rem;
+  }
+}
+
+/* Square corners throughout: the prototype has no rounded edges. */
+.rounded,
+.card,
+.btn,
+.form-control,
+.form-select,
+.alert,
+.badge,
+.offcanvas {
+  border-radius: 0 !important;
+}
+
+/* ---------------------------------------------------------------- type */
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.eyebrow {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.meta {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.text-muted-gold {
+  color: var(--c-text-muted) !important;
+}
+
+.tracking-brand {
+  letter-spacing: var(--ls-brand);
+}
+
+.tracking-wide {
+  letter-spacing: var(--ls-wide);
+}
+
+/* Fluid display sizes so the hero does not overflow a phone. */
+.display-hero {
+  font-size: clamp(2.5rem, 7vw, 4.25rem);
+  line-height: 1.04;
+}
+
+.display-page {
+  font-size: clamp(2rem, 5vw, 2.875rem);
+}
+
+.display-section {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn {
+  --bs-btn-padding-x: 2rem;
+  --bs-btn-padding-y: 0.9rem;
+  --bs-btn-font-size: var(--fs-sm);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--c-accent);
+  --bs-btn-border-color: var(--c-accent);
+  --bs-btn-color: var(--c-on-accent);
+  --bs-btn-hover-bg: var(--c-accent-hover);
+  --bs-btn-hover-border-color: var(--c-accent-hover);
+  --bs-btn-hover-color: var(--c-on-accent);
+  --bs-btn-active-bg: var(--c-accent-hover);
+  --bs-btn-active-border-color: var(--c-accent-hover);
+  --bs-btn-active-color: var(--c-on-accent);
+  --bs-btn-disabled-bg: var(--c-accent);
+  --bs-btn-disabled-border-color: var(--c-accent);
+  --bs-btn-disabled-color: var(--c-on-accent);
+}
+
+.btn-outline-gold {
+  --bs-btn-color: var(--c-text);
+  --bs-btn-border-color: var(--c-border-accent);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-color: var(--c-accent);
+  --bs-btn-hover-border-color: var(--c-accent);
+  --bs-btn-hover-bg: transparent;
+  --bs-btn-active-color: var(--c-accent);
+  --bs-btn-active-border-color: var(--c-accent);
+  --bs-btn-active-bg: transparent;
+  --bs-btn-disabled-color: var(--c-text-muted);
+  --bs-btn-disabled-border-color: var(--c-border);
+  border: 1px solid var(--bs-btn-border-color);
+}
+
+.btn-link-gold {
+  --bs-btn-color: var(--c-text-muted);
+  --bs-btn-hover-color: var(--c-accent);
+  --bs-btn-padding-x: 0.5rem;
+  border: none;
+  background: none;
+}
+
+/* ---------------------------------------------------------------- forms */
+
+.form-label {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-border-input);
+  color: var(--c-text);
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+}
+
+.form-control::placeholder {
+  color: var(--c-text-dim);
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: var(--c-border-accent);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--c-surface);
+  border-color: var(--c-accent);
+  color: var(--c-text);
+  box-shadow: 0 0 0 0.2rem var(--bs-focus-ring-color);
+}
+
+.form-control.is-invalid,
+.form-control:invalid[aria-invalid='true'] {
+  border-color: var(--c-danger);
+  background-image: none;
+}
+
+.form-check-input {
+  background-color: var(--c-surface);
+  border-color: var(--c-border-input);
+}
+
+.form-check-input:checked {
+  background-color: var(--c-accent);
+  border-color: var(--c-accent);
+}
+
+.form-text {
+  color: var(--c-text-muted);
+  font-size: var(--fs-xs);
+}
+
+.invalid-feedback {
+  color: var(--c-danger);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------------------------------------------- surfaces */
+
+.card {
+  --bs-card-bg: var(--c-surface);
+  --bs-card-border-color: var(--c-border);
+  --bs-card-color: var(--c-text);
+  transition: border-color 160ms ease;
+}
+
+a.card:hover,
+.card-hover:hover {
+  border-color: var(--c-accent);
+}
+
+.panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+
+.surface-deep {
+  background: var(--c-bg-deep);
+}
+
+.surface-alt {
+  background: var(--c-bg-alt);
+}
+
+.surface-raised {
+  background: var(--c-surface-raised);
+}
+
+.border-gold {
+  border-color: var(--c-accent) !important;
+}
+
+/* Drawn bottle stands in for product photography across the catalogue. */
+.bottle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-surface-image);
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+}
+
+.bottle--sm {
+  aspect-ratio: 1 / 1;
+  width: 4rem;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------- feedback */
+
+.alert-error {
+  background: var(--c-danger-bg);
+  border: 1px solid var(--c-danger);
+  color: var(--c-danger);
+}
+
+.alert-success {
+  background: rgba(143, 191, 152, 0.1);
+  border: 1px solid var(--c-success-dot);
+  color: var(--c-success);
+}
+
+.text-free {
+  color: var(--c-success);
+}
+
+.stock-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--c-success-dot);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.stock-dot--out {
+  background: var(--c-danger);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.promo-bar {
+  background: var(--c-bg-deep);
+  color: var(--c-text);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+}
+
+.site-header {
+  background: var(--c-bg);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.offcanvas .nav-link,
+.site-header .nav-link {
+  color: var(--c-text);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  padding-inline: 0;
+}
+
+.offcanvas .nav-link:hover,
+.offcanvas .nav-link.active,
+.site-header .nav-link:hover,
+.site-header .nav-link.active {
+  color: var(--c-accent);
+}
+
+.brand-mark {
+  font-family: var(--font-serif);
+  letter-spacing: var(--ls-brand);
+  font-weight: 500;
+  color: var(--c-text);
+  text-decoration: none;
+}
+
+.brand-mark:hover {
+  color: var(--c-text);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--c-text);
+  padding: 0.25rem;
+  position: relative;
+  display: inline-flex;
+  transition: color 160ms ease;
+}
+
+.icon-btn:hover {
+  color: var(--c-accent);
+}
+
+.cart-count {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.5rem;
+  background: var(--c-accent);
+  color: #fff;
+  font-size: 0.625rem;
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.2rem;
+}
+
+/* The mobile menu is a Bootstrap offcanvas driven by React state, not by
+   Bootstrap's JS bundle, so re-renders can never desync it. */
+.offcanvas {
+  background: var(--c-bg);
+  color: var(--c-text);
+  border-left: 1px solid var(--c-border);
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.site-footer {
+  background: var(--c-footer-bg);
+  color: var(--c-footer-text);
+}
+
+.site-footer a {
+  color: var(--c-footer-text);
+}
+
+.site-footer a:hover {
+  color: var(--c-footer-heading);
+}
+
+.site-footer .footer-heading {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-footer-heading);
+}
+
+.site-footer .footer-brand {
+  font-family: var(--font-serif);
+  letter-spacing: var(--ls-brand);
+  color: var(--c-footer-heading);
+}
+
+.site-footer hr {
+  border-color: var(--c-footer-rule);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- misc */
+
+.step-dot {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  border: 1px solid var(--c-border-input);
+  color: var(--c-text-dim);
+  flex-shrink: 0;
+}
+
+.step-dot--on {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-on-accent);
+}
+
+.qty-group {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--c-border-input);
+}
+
+.qty-group button {
+  width: 2.75rem;
+  height: 3.25rem;
+  background: none;
+  border: none;
+  color: var(--c-text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: color 160ms ease;
+}
+
+.qty-group button:hover:not(:disabled) {
+  color: var(--c-accent);
+}
+
+.qty-group button:disabled {
+  opacity: 0.35;
+}
+
+.qty-group span {
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.spinner-gold {
+  color: var(--c-accent);
+}
+
+.divider-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--c-text-muted);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+}
+
+.divider-label::before,
+.divider-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-border);
+}
+
+.strength-bar {
+  height: 3px;
+  flex: 1;
+  background: var(--c-border);
+}
+
+.strength-bar--on {
+  background: var(--c-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

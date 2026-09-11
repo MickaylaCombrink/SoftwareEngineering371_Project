@@ -1,13 +1,6 @@
-:root {
-  --brand-gold: #C9973F;
-  --brand-gold-light: #D9BC7E;
-  --brand-muted: #A79263;
+@import "tailwindcss";
+
+@theme {
+  --font-cormorantGaramond: "Cormorant Garamond", serif;
+  --font-jost: "Jost", sans-serif;
 }
-
-.text-brand-gold { color: var(--brand-gold) !important; }
-.text-brand-gold-light { color: var(--brand-gold-light) !important; }
-.text-brand-muted { color: var(--brand-muted) !important; }
-.bg-brand-gold { background-color: var(--brand-gold) !important; }
-.border-brand-gold { border-color: var(--brand-gold) !important; }
-
-.font-serif { font-family: "Cormorant Garamond", serif; }
