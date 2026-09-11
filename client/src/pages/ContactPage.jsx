@@ -26,15 +26,15 @@ export function ContactPage() {
         <div className="contact-dark__info">
           <div className="contact-dark__info-item">
             <span className="contact-dark__info-label">Email</span>
-            <span className="contact-dark__info-value">hello@scentigue.co.za</span>
+            <span className="contact-dark__info-value">577480@student.belgiumcampus.co.za</span>
           </div>
           <div className="contact-dark__info-item">
             <span className="contact-dark__info-label">Phone</span>
-            <span className="contact-dark__info-value">+27 12 345 6789</span>
+            <span className="contact-dark__info-value">+27 68 550 0830</span>
           </div>
           <div className="contact-dark__info-item">
             <span className="contact-dark__info-label">Hours</span>
-            <span className="contact-dark__info-value">Mon–Fri, 09:00 – 17:00 SAST</span>
+            <span className="contact-dark__info-value">Mon–Fri, 08:00 – 17:00 SAST</span>
           </div>
         </div>
 
