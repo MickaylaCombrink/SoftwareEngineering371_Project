@@ -38,7 +38,7 @@ export function ContactPage() {
           </div>
         </div>
 
-        <div className="contact-dark__socials">
+      {/*  <div className="contact-dark__socials">
           <span>Follow us</span>
           <div className="contact-dark__social-links">
             <a href="#" className="contact-dark__social-link">Instagram</a>
@@ -46,6 +46,7 @@ export function ContactPage() {
             <a href="#" className="contact-dark__social-link">Facebook</a>
           </div>
         </div>
+        */}
       </div>
 
       <div className="contact-dark__right">

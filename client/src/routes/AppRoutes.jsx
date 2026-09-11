@@ -28,6 +28,7 @@ export function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/admin" element={<AdminPanel />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<CartPage />} />

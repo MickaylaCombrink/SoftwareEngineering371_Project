@@ -4,7 +4,7 @@
   --font-cormorantGaramond: "Cormorant Garamond", serif;
   --font-jost: "Jost", sans-serif;
 }
-}
+
 /* Page-specific styles for the catalogue, which still uses the team's
    original BEM classes. Everything else is Bootstrap plus styles/theme.css.
 
@@ -489,12 +489,12 @@
 .contact-dark__title {
   margin: 0 0 1rem;
   font-size: 2rem;
-  color: #fff;
+  color: #D9BC7E;
 }
 
 .contact-dark__subtitle {
   font-size: 1rem;
-  color: #d6d3d1;
+  color: #D9BC7E;
   line-height: 1.6;
   margin: 0 0 2.5rem;
   max-width: 32rem;
@@ -522,7 +522,7 @@
 
 .contact-dark__info-value {
   font-size: 1rem;
-  color: #fff;
+  color: #D9BC7E;
 }
 
 .contact-dark__socials {
