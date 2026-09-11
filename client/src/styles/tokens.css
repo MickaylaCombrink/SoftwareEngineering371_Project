@@ -1,0 +1,97 @@
+/* Scentigue design tokens — taken from the high-fidelity prototype.
+   Every colour, size and font in the app resolves to one of these. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap');
+
+:root {
+  /* Surfaces, darkest to lightest */
+  --c-bg-deep: #1e1b18;
+  --c-bg: #2a2623;
+  --c-bg-alt: #2f2a25;
+  --c-surface: #332e29;
+  --c-surface-raised: #3a332b;
+  --c-surface-image: #3a3128;
+
+  /* Lines */
+  --c-border: #453e37;
+  --c-border-input: #564c3a;
+  --c-border-accent: #8a7343;
+
+  /* Text */
+  --c-text: #d9bc7e;
+  --c-text-muted: #a79263;
+  --c-text-dim: #7d6e52;
+  --c-text-ghost: #46403a;
+
+  /* Accent */
+  --c-accent: #c9973f;
+  --c-accent-hover: #e0b25c;
+  --c-on-accent: #241f1a;
+
+  /* Status */
+  --c-success: #8fbf98;
+  --c-success-dot: #4a6b4f;
+  --c-danger: #d98b8b;
+  --c-danger-bg: #3a2b2b;
+
+  /* Footer (the one light band in the design) */
+  --c-footer-bg: #e8dfd0;
+  --c-footer-text: #5a5148;
+  --c-footer-heading: #2a2623;
+  --c-footer-rule: #cfc2ad;
+
+  /* Type */
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+
+  --fs-eyebrow: 0.75rem;
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 2rem;
+  --fs-2xl: 2.5rem;
+  --fs-3xl: 2.875rem;
+  --fs-hero: 4.25rem;
+
+  --ls-wide: 0.12em;
+  --ls-wider: 0.16em;
+  --ls-widest: 0.24em;
+  --ls-brand: 0.22em;
+
+  /* Spacing */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-20: 5rem;
+
+  /* Layout */
+  --page-max: 1440px;
+  --gutter: 1.5rem;
+  --control-h: 3.25rem;
+  --control-h-sm: 2.5rem;
+
+  --transition: 160ms ease;
+}
+
+/* The gutter widens with the viewport, so one variable drives every page's
+   side padding instead of a media query per component. */
+@media (min-width: 48em) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+@media (min-width: 64em) {
+  :root {
+    --gutter: 4rem;
+  }
+}
