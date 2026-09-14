@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest --coverage --runInBand",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand --testPathPattern=unit",
+    "test:integration": "jest --runInBand --testPathPattern=integration",
+    "test:coverage": "jest --coverage --runInBand",
+    "test:watch": "jest --watch --runInBand",
     "lint": "eslint src tests",
     "seed": "node src/scripts/seed.js"
   },
@@ -15,16 +19,13 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "bootstrap": "^5.3.8",
-    "bootstrap-icons": "^1.13.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.7.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.4.0",
-    "react-router-dom": "^7.18.3"
+    "mongoose": "^8.4.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
@@ -39,8 +40,29 @@
     "setupFiles": [
       "<rootDir>/tests/setup.js"
     ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/client/"
+    ],
     "collectCoverageFrom": [
-      "src/**/*.js"
-    ]
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/scripts/**",
+      "!src/api/**",
+      "!src/utils/errorMessages.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "html",
+      "lcov"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 70,
+        "functions": 80,
+        "lines": 80
+      }
+    }
   }
 }

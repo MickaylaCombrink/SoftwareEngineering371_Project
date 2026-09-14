@@ -226,3 +226,82 @@ describe('Orders', () => {
     expect(res.body.data.order.orderStatus).toBe('Shipping');
   });
 });
+
+describe('Admin order listing', () => {
+  async function placeOrderAs(token) {
+    const product = await createProduct({ stock: 10 });
+    await seedCartFor(token, product, 1);
+    const res = await request(app).post('/api/orders').set('Authorization', `Bearer ${token}`);
+    return res.body.data.order;
+  }
+
+  test('GET /api/orders/all returns every order for an admin', async () => {
+    await placeOrderAs(customerToken);
+    await placeOrderAs(adminToken);
+
+    const res = await request(app)
+      .get('/api/orders/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.results).toBe(2);
+    // The customer relation is populated so the table can show who ordered
+    expect(res.body.data.orders[0].userId).toHaveProperty('email');
+  });
+
+  test("GET /api/orders still returns only the caller's own orders", async () => {
+    await placeOrderAs(customerToken);
+    await placeOrderAs(adminToken);
+
+    const res = await request(app)
+      .get('/api/orders')
+      .set('Authorization', `Bearer ${customerToken}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.results).toBe(1);
+  });
+
+  test('a customer cannot list every order', async () => {
+    await placeOrderAs(customerToken);
+
+    const res = await request(app)
+      .get('/api/orders/all')
+      .set('Authorization', `Bearer ${customerToken}`);
+
+    expect(res.statusCode).toBe(403);
+  });
+
+  test("'all' is routed as the listing, not read as an order id", async () => {
+    // Declaration order in orderRoutes.js is what makes this pass
+    const res = await request(app)
+      .get('/api/orders/all')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.statusCode).not.toBe(400);
+    expect(Array.isArray(res.body.data.orders)).toBe(true);
+  });
+
+  test('an admin can mark an order paid', async () => {
+    const order = await placeOrderAs(customerToken);
+    expect(order.paymentStatus).toBe('Pending');
+
+    const res = await request(app)
+      .put(`/api/orders/${order._id}/payment`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ paymentStatus: 'Paid' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.order.paymentStatus).toBe('Paid');
+  });
+
+  test('a customer cannot change payment status', async () => {
+    const order = await placeOrderAs(customerToken);
+
+    const res = await request(app)
+      .put(`/api/orders/${order._id}/payment`)
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({ paymentStatus: 'Paid' });
+
+    expect(res.statusCode).toBe(403);
+  });
+});

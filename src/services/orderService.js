@@ -82,6 +82,15 @@ class OrderService {
     return orderRepository.findByUser(userId);
   }
 
+  // Every order in the system. Guarded here as well as on the route, so the
+  // service can never hand back the full list to a customer.
+  async getAllOrders({ isAdmin = false } = {}) {
+    if (!isAdmin) {
+      throw AppError.forbidden('Only administrators can list every order.');
+    }
+    return orderRepository.findAllOrders({ populate: { path: 'userId', select: 'firstName lastName email' } });
+  }
+
   async getOrder(orderId, userId, { isAdmin = false } = {}) {
     const order = await orderRepository.findByIdForUser(orderId, userId, { isAdmin });
     if (!order) {
@@ -90,6 +99,17 @@ class OrderService {
       }
       // 403 whether or not it exists, so order ids are never leaked
       throw AppError.forbidden('You do not have permission to view this order.');
+    }
+    return order;
+  }
+
+  async updatePaymentStatus(orderId, paymentStatus, { isAdmin = false }) {
+    if (!isAdmin) {
+      throw AppError.forbidden('Only administrators can update payment status.');
+    }
+    const order = await orderRepository.updatePaymentStatus(orderId, paymentStatus);
+    if (!order) {
+      throw AppError.notFound('No order found with that ID.');
     }
     return order;
   }

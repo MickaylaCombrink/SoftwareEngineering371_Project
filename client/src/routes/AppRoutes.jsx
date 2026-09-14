@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { PageLayout } from '../layout/PageLayout';
 import { CheckoutLayout } from '../layout/CheckoutLayout';
-import { EmptyState } from '../components/EmptyState';
+import { AdminLayout } from '../layout/AdminLayout';
 import { Home } from '../pages/Home';
 import { ProductCatalogue } from '../pages/ProductCatalogue';
 import { ProductDetail } from '../pages/ProductDetail';
@@ -13,9 +13,13 @@ import { OrderHistory } from '../pages/OrderHistory';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import { NotFound } from '../pages/NotFound';
+import { AdminDashboard } from '../pages/admin/AdminDashboard';
+import { AdminProducts } from '../pages/admin/AdminProducts';
+import { AdminProductForm } from '../pages/admin/AdminProductForm';
+import { AdminCategories } from '../pages/admin/AdminCategories';
+import { AdminOrders } from '../pages/admin/AdminOrders';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
-import  AdminPanel  from '../pages/AdminPanel';
 
 export function AppRoutes() {
   return (
@@ -28,18 +32,10 @@ export function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/admin" element={<AdminPanel />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<OrderHistory />} />
-        </Route>
-
-        <Route element={<AdminRoute />}>
-          <Route
-            path="/admin"
-            element={<EmptyState message="Admin dashboard — to be built by Person 4." />}
-          />
         </Route>
 
         <Route path="*" element={<NotFound />} />
@@ -50,6 +46,19 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders/:id/confirmation" element={<OrderConfirmation />} />
+        </Route>
+      </Route>
+
+      {/* Admin console. AdminRoute wraps the layout, so every screen beneath
+          it is behind the same guard — there is no unguarded way in. */}
+      <Route element={<AdminRoute />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<AdminProductForm />} />
+          <Route path="products/:id" element={<AdminProductForm />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="orders" element={<AdminOrders />} />
         </Route>
       </Route>
     </Routes>

@@ -11,6 +11,11 @@ class OrderRepository extends BaseRepository {
     return this.findAll({ userId }, { sort: { createdAt: -1 }, ...options });
   }
 
+  // Admin fulfilment queue: every order, newest first
+  async findAllOrders(options = {}) {
+    return this.findAll({}, { sort: { createdAt: -1 }, ...options });
+  }
+
   // Ownership-scoped fetch: returns null for a non-owner
   async findByIdForUser(orderId, userId, { isAdmin = false } = {}) {
     const filter = isAdmin ? { _id: orderId } : { _id: orderId, userId };

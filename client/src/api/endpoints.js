@@ -58,6 +58,18 @@ export const ProductsAPI = {
 
   get: (id) => api.get(`/api/products/${id}`).then((data) => data.product),
 
+  // The API caps a page at 100, so the admin screens page through rather than
+  // silently showing only the first hundred products.
+  listAll: async () => {
+    const first = await ProductsAPI.list({ limit: 100 });
+    let all = first.products;
+    for (let page = 2; page <= first.pages; page += 1) {
+      const next = await ProductsAPI.list({ limit: 100, page });
+      all = all.concat(next.products);
+    }
+    return all;
+  },
+
   // Admin only
   create: (payload) => api.post('/api/products', payload).then((data) => data.product),
   update: (id, payload) => api.put(`/api/products/${id}`, payload).then((data) => data.product),
@@ -102,7 +114,13 @@ export const OrdersAPI = {
   list: () => api.get('/api/orders').then((data) => data.orders),
   get: (id) => api.get(`/api/orders/${id}`).then((data) => data.order),
 
-  // Admin only
+  // Admin only. A separate '/all' path rather than a query flag, so the
+  // customer listing on '/api/orders' can never widen by accident.
+  listAll: () => api.get('/api/orders/all').then((data) => data.orders),
+
   setStatus: (id, orderStatus) =>
     api.put(`/api/orders/${id}/status`, { orderStatus }).then((data) => data.order),
+
+  setPaymentStatus: (id, paymentStatus) =>
+    api.put(`/api/orders/${id}/payment`, { paymentStatus }).then((data) => data.order),
 };

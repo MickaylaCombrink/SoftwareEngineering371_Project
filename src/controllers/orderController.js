@@ -17,10 +17,30 @@ exports.getMyOrders = catchAsync(async (req, res, next) => {
   });
 });
 
+// GET /api/orders/all - every order, admin only
+exports.getAllOrders = catchAsync(async (req, res, next) => {
+  const orders = await orderService.getAllOrders({ isAdmin: req.user.role === 'admin' });
+  res.status(200).json({
+    status: 'success',
+    results: orders.length,
+    data: { orders },
+  });
+});
+
 // GET /api/orders/:id - owner or admin only
 exports.getOrder = catchAsync(async (req, res, next) => {
   const isAdmin = req.user.role === 'admin';
   const order = await orderService.getOrder(req.params.id, req.user.id, { isAdmin });
+  res.status(200).json({ status: 'success', data: { order } });
+});
+
+// PUT /api/orders/:id/payment - admin only
+exports.updatePaymentStatus = catchAsync(async (req, res, next) => {
+  const order = await orderService.updatePaymentStatus(
+    req.params.id,
+    req.body.paymentStatus,
+    { isAdmin: req.user.role === 'admin' }
+  );
   res.status(200).json({ status: 'success', data: { order } });
 });
 

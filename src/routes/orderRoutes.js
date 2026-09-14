@@ -11,7 +11,11 @@ router
   .post(orderController.createOrder)
   .get(orderController.getMyOrders);
 
+// Declared before '/:id', otherwise 'all' is parsed as an order id
+router.get('/all', restrictTo('admin'), orderController.getAllOrders);
+
 router.get('/:id', orderController.getOrder);
 router.put('/:id/status', restrictTo('admin'), orderController.updateOrderStatus);
+router.put('/:id/payment', restrictTo('admin'), orderController.updatePaymentStatus);
 
 module.exports = router;

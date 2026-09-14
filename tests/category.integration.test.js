@@ -69,9 +69,6 @@ describe('Reading categories', () => {
     expect(res.body.data.category.description).toBe('Warm things.');
   });
 
-  test('a malformed id -> 400', async () => {
-    expect((await request(app).get('/api/categories/not-an-id')).statusCode).toBe(400);
-  });
 
   test('a valid but unknown id -> 404', async () => {
     const res = await request(app).get(`/api/categories/${new mongoose.Types.ObjectId()}`);

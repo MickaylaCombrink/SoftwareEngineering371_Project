@@ -508,3 +508,149 @@ a.card:hover,
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------- admin */
+
+.admin-sidebar {
+  width: 240px;
+  background: var(--c-bg-deep);
+  border-right: 1px solid var(--c-border);
+}
+
+.admin-sidebar--drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1045;
+  overflow-y: auto;
+}
+
+.admin-navitem {
+  display: block;
+  padding: 0.8rem 1.25rem;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.admin-navitem:hover {
+  color: var(--c-text);
+  background: var(--c-surface-raised);
+}
+
+.admin-navitem--on {
+  background: var(--c-surface-raised);
+  color: var(--c-text);
+  border-left-color: var(--c-accent);
+}
+
+.admin-avatar {
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 50%;
+  background: var(--c-surface-raised);
+  color: var(--c-accent-hover);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  flex-shrink: 0;
+}
+
+/* Tables inherit the panel background rather than Bootstrap's own */
+.admin-table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--c-text);
+  --bs-table-border-color: var(--c-border);
+  --bs-table-hover-bg: var(--c-surface-raised);
+  --bs-table-hover-color: var(--c-text);
+  margin-bottom: 0;
+}
+
+.admin-table thead th {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  font-weight: 400;
+  border-bottom: 1px solid var(--c-border);
+  padding: 0.875rem 1rem;
+  white-space: nowrap;
+}
+
+.admin-table tbody td {
+  padding: 1rem;
+  border-top: 1px solid var(--c-border);
+  border-bottom: none;
+  vertical-align: middle;
+}
+
+.admin-thumb {
+  width: 2.25rem;
+  height: 2.75rem;
+  background: var(--c-surface-image);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.admin-thumb .bottle {
+  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.admin-select {
+  min-height: 2.25rem;
+  padding: 0.25rem 1.75rem 0.25rem 0.5rem;
+  font-size: var(--fs-xs);
+}
+
+/* Status badges */
+.badge--ok {
+  color: var(--c-success);
+  border-color: var(--c-success-dot);
+}
+
+.badge--warn {
+  color: var(--c-accent-hover);
+  border-color: var(--c-border-accent);
+}
+
+.badge--danger {
+  color: var(--c-danger);
+  border-color: var(--c-danger);
+}
+
+.text-danger-gold {
+  color: var(--c-danger) !important;
+}
+
+.btn-danger-gold {
+  --bs-btn-bg: var(--c-danger-bg);
+  --bs-btn-border-color: var(--c-danger);
+  --bs-btn-color: var(--c-danger);
+  --bs-btn-hover-bg: var(--c-danger);
+  --bs-btn-hover-border-color: var(--c-danger);
+  --bs-btn-hover-color: var(--c-bg);
+  border: 1px solid var(--bs-btn-border-color);
+}
+
+/* A flex child will not shrink below its content without this */
+.min-width-0 {
+  min-width: 0;
+}
+
+.modal-backdrop {
+  --bs-backdrop-opacity: 0.65;
+}
+
+/* .modal-dialog disables pointer events and .modal-content re-enables them.
+   Our dialog body is a .panel, so it has to opt back in or nothing inside it
+   can be clicked. */
+.modal .modal-dialog > .panel {
+  pointer-events: auto;
+}
