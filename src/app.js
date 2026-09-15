@@ -7,6 +7,7 @@ const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const queryRoutes = require('./routes/queryRoutes');
 
 const notFound = require('./middleware/notFound');
 const globalErrorHandler = require('./middleware/errorHandler');
@@ -56,6 +57,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/queries', queryRoutes);
 
 // Error handling must stay last
 app.use(notFound);

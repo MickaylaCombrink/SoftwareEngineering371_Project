@@ -6,7 +6,8 @@ import { Bottle } from './Bottle';
 // When the browser fails to load one we fall back to the drawn bottle rather
 // than leaving a broken-image icon and its alt text on the page.
 export function ProductImage({ product, size = 110, className = '' }) {
-  const url = product?.image?.[0] || null;
+  const raw = product?.image;
+  const url = Array.isArray(raw) ? raw[0] : raw || null;
   const [failed, setFailed] = useState(false);
 
   // A new product means a new URL, so give it a fresh chance to load
@@ -14,17 +15,19 @@ export function ProductImage({ product, size = 110, className = '' }) {
     setFailed(false);
   }, [url]);
 
+  const label = product?.productName || product?.name || '';
+
   return (
     <div className={`bottle ${className}`.trim()}>
       {url && !failed ? (
         <img
           src={url}
-          alt={product.productName}
+          alt={label}
           onError={() => setFailed(true)}
           style={{ objectFit: 'cover', width: '100%', height: '100%' }}
         />
       ) : (
-        <Bottle seed={product?.productName || ''} size={size} />
+        <Bottle seed={label} size={size} />
       )}
     </div>
   );

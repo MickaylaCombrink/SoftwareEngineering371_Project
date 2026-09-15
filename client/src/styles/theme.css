@@ -586,6 +586,35 @@ a.card:hover,
   vertical-align: middle;
 }
 
+.query-message {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.query-status {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--c-text-dim);
+}
+
+.query-status--new {
+  background: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(201, 151, 63, 0.25);
+}
+
+.query-status--in-progress {
+  background: var(--c-text-muted);
+}
+
+.query-status--resolved {
+  background: var(--c-success);
+}
+
 .admin-thumb {
   width: 2.25rem;
   height: 2.75rem;

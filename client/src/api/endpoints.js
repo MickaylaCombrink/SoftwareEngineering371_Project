@@ -124,3 +124,14 @@ export const OrdersAPI = {
   setPaymentStatus: (id, paymentStatus) =>
     api.put(`/api/orders/${id}/payment`, { paymentStatus }).then((data) => data.order),
 };
+
+export const QueriesAPI = {
+  // Anyone can submit a contact query
+  create: (payload) => api.post('/api/queries', payload).then((data) => data.query),
+
+  // Admin only - triage queue
+  listAll: () => api.get('/api/queries').then((data) => data.queries),
+  setStatus: (id, status) =>
+    api.put(`/api/queries/${id}`, { status }).then((data) => data.query),
+  remove: (id) => api.delete(`/api/queries/${id}`),
+};

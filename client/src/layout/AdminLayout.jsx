@@ -8,6 +8,7 @@ const NAV = [
   { to: '/admin/products', label: 'Products' },
   { to: '/admin/categories', label: 'Categories' },
   { to: '/admin/orders', label: 'Orders' },
+  { to: '/admin/queries', label: 'Enquiries' },
 ];
 
 function initials(user) {
