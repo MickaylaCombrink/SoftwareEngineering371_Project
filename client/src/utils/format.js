@@ -26,6 +26,18 @@ export function formatDate(value) {
   });
 }
 
+// Date and time together - the admin query queue needs the full stamp
+export function formatDateTime(value) {
+  if (!value) return '';
+  return new Date(value).toLocaleString('en-ZA', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 // Short, human order reference derived from the Mongo id
 export function orderReference(id) {
   if (!id) return '';

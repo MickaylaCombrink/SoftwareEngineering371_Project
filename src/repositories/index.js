@@ -7,6 +7,7 @@ const categoryRepository = require('./CategoryRepository');
 const cartRepository = require('./CartRepository');
 const orderRepository = require('./OrderRepository');
 const refreshTokenRepository = require('./RefreshTokenRepository');
+const queryRepository = require('./QueryRepository');
 
 module.exports = {
   BaseRepository,
@@ -17,6 +18,7 @@ module.exports = {
   cartRepository,
   orderRepository,
   refreshTokenRepository,
+  queryRepository,
 
   UserRepository: userRepository.UserRepository,
   ProductRepository: productRepository.ProductRepository,
@@ -24,4 +26,5 @@ module.exports = {
   CartRepository: cartRepository.CartRepository,
   OrderRepository: orderRepository.OrderRepository,
   RefreshTokenRepository: refreshTokenRepository.RefreshTokenRepository,
+  QueryRepository: queryRepository.QueryRepository,
 };

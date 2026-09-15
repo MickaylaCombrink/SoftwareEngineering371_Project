@@ -18,6 +18,7 @@ import { AdminProducts } from '../pages/admin/AdminProducts';
 import { AdminProductForm } from '../pages/admin/AdminProductForm';
 import { AdminCategories } from '../pages/admin/AdminCategories';
 import { AdminOrders } from '../pages/admin/AdminOrders';
+import { AdminQueries } from '../pages/admin/AdminQueries';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
 
@@ -59,6 +60,7 @@ export function AppRoutes() {
           <Route path="products/:id" element={<AdminProductForm />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="queries" element={<AdminQueries />} />
         </Route>
       </Route>
     </Routes>

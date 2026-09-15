@@ -39,7 +39,7 @@ export function Home() {
       try {
         // Newest four in stock for the arrivals strip, plus the category list
         const [productData, categoryData] = await Promise.all([
-          ProductsAPI.list({ sort: '-createdAt', limit: 4, inStock: true }),
+          ProductsAPI.list({ sort: 'newest', limit: 4, inStock: true }),
           CategoriesAPI.list(),
         ]);
         if (cancelled) return;

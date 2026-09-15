@@ -35,11 +35,15 @@ class CartService {
 
     if (existing) {
       existing.quantity = requestedTotal;
+      if (!existing.image) {
+        existing.image = Array.isArray(product.image) ? product.image[0] : product.image;
+      }
     } else {
       cart.items.push({
         productId,
         name: product.productName,
         unitPrice: product.price,
+        image: Array.isArray(product.image) ? product.image[0] : product.image,
         quantity: quantityNum,
       });
     }
