@@ -14,6 +14,11 @@ const globalErrorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Render terminates TLS at its load balancer and forwards the caller's
+// address in X-Forwarded-For. Without this the rate limiter sees every
+// request as coming from the proxy and throttles all users as one.
+app.set('trust proxy', 1);
+
 app.use(helmet());
 
 // CORS: CLIENT_ORIGIN is a comma-separated allow-list

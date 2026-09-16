@@ -7,6 +7,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.js'],
+    // Dates render in the machine's zone, so without pinning one the same
+    // test passes in Johannesburg and fails on a CI box running UTC.
+    env: { TZ: 'Africa/Johannesburg' },
     // Playwright specs live under tests/e2e and are run by Playwright, not here
     exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**'],
     coverage: {

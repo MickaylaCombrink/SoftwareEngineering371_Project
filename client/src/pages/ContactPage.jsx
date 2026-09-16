@@ -57,7 +57,7 @@ export function ContactPage() {
 
             <div className="contact-card__item">
               <span className="contact-card__label">Correspondence</span>
-              <span className="contact-card__value">577480@student.belgiumcampus.ac.za</span>
+              <span className="contact-card__value">scentigue@gmail.com</span>
             </div>
             <div className="contact-card__item">
               <span className="contact-card__label">Telephone</span>

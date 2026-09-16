@@ -67,7 +67,10 @@ describe('formatDate', () => {
 });
 
 describe('formatDateTime', () => {
-  test('renders a date with a time', () => {
+  test('renders a date with a time, converted to the local zone', () => {
+    // 09:00 UTC is 11:00 in South Africa. The zone is pinned in
+    // vitest.config.js, so this asserts the conversion rather than the
+    // timezone of whoever runs the suite.
     expect(formatDateTime('2026-09-14T09:00:00.000Z')).toMatch(/2026/);
     expect(formatDateTime('2026-09-14T09:00:00.000Z')).toMatch(/11:00/);
   });
