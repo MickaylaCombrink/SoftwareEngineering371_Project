@@ -65,9 +65,21 @@ async function wipe() {
 async function seedAdmin() {
   const existing = await User.findOne({ email: admin.email });
   if (existing) {
-    if (existing.role !== 'admin') {
-      await User.updateOne({ _id: existing._id }, { role: 'admin' });
-      console.log(`Promoted existing user ${admin.email} to admin.`);
+    // Re-seeding must also apply a changed ADMIN_PASSWORD, otherwise editing
+    // .env and re-running seed would do nothing for an existing account.
+    const passwordHash = await bcrypt.hash(admin.password, 12);
+    const passwordMatches =
+      !!existing.password && (await bcrypt.compare(admin.password, existing.password));
+
+    const changes = { role: 'admin' };
+    if (!passwordMatches) changes.password = passwordHash;
+
+    if (changes.password || existing.role !== 'admin') {
+      await User.updateOne({ _id: existing._id }, changes);
+      console.log(`Updated admin ${admin.email}.`);
+      if (changes.password) {
+        console.log('  Password changed to match ADMIN_PASSWORD.');
+      }
     } else {
       console.log(`Admin ${admin.email} already exists - left untouched.`);
     }
