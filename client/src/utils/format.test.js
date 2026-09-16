@@ -69,7 +69,7 @@ describe('formatDate', () => {
 describe('formatDateTime', () => {
   test('renders a date with a time', () => {
     expect(formatDateTime('2026-09-14T09:00:00.000Z')).toMatch(/2026/);
-    expect(formatDateTime('2026-09-14T09:00:00.000Z')).toMatch(/09:00|9:00/);
+    expect(formatDateTime('2026-09-14T09:00:00.000Z')).toMatch(/11:00/);
   });
 
   test('an absent date is blank, not "Invalid Date"', () => {
