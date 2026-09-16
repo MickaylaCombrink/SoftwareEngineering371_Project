@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bottle } from './Bottle';
+import { assetUrl } from '../utils/assetUrl';
 
 // Product images are external URLs from the seed data, so any of them can be
 // unreachable — a blocked host, an offline placeholder service, a dead link.
@@ -21,7 +22,7 @@ export function ProductImage({ product, size = 110, className = '' }) {
     <div className={`bottle ${className}`.trim()}>
       {url && !failed ? (
         <img
-          src={url}
+          src={assetUrl(url)}
           alt={label}
           onError={() => setFailed(true)}
           style={{ objectFit: 'cover', width: '100%', height: '100%' }}

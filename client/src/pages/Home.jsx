@@ -4,6 +4,7 @@ import { ProductsAPI, CategoriesAPI } from '../api/endpoints';
 import { ProductCard } from '../components/ProductCard';
 import { Bottle } from '../components/Bottle';
 import { ShieldIcon, TruckIcon, ReturnIcon } from '../components/Icons';
+import { assetUrl } from '../utils/assetUrl';
 
 const PROMISES = [
   {
@@ -88,7 +89,7 @@ export function Home() {
                 </div>
               ) : (
                 <img
-                  src="/images/homepage-hero.webp"
+                  src={assetUrl('/images/homepage-hero.webp')}
                   alt="The Scentigue collection"
                   onError={() => setHeroFailed(true)}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: '20rem' }}
